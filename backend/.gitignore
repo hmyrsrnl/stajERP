@@ -1,0 +1,9 @@
+
+backend/.env
+backend/config.php
+.env
+config.php
+../backend/.env
+../backend/config.php
+.env.local
+.env.*.local
