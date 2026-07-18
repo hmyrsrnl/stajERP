@@ -15,23 +15,22 @@ function Login() {
     setMessage('');
 
     const loginData = { email, password };
-  
+
+
     axios.post('http://localhost/stajERP/backend/login.php', loginData)
       .then(res => {
-        if (res.data) {
-          localStorage.setItem('employee_id', res.data.id);
-          localStorage.setItem('system_role', res.data.system_role); 
-          localStorage.setItem('user', JSON.stringify(res.data));
+        if (res.data && res.data.user) {
+          const userData = res.data.user;
+
+          localStorage.setItem('employee_id', userData.id);
+          localStorage.setItem('system_role', userData.role);
+          localStorage.setItem('user', JSON.stringify(userData));
 
           alert("Giriş başarıyla gerçekleşti! Kontrol merkezine yönlendiriliyorsunuz.");
 
           navigate('/dashboard-selection');
         }
       })
-      .catch(err => {
-        const errorMsg = err.response?.data?.error || 'E-posta veya şifre hatalı!';
-        setMessage(errorMsg);
-      });
   };
 
   return (

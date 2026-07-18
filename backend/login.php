@@ -31,11 +31,11 @@ if ($method === 'POST') {
         $sql = "SELECT ID, Ad, Soyad, Email, password, System_role, Status FROM Calisan WHERE Email = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$email]);
-        
+
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
-            
+        if ($user && password_verify((string)$password, (string)$user['password'])) {
+
             if ($user['Status'] === 'Pasif') {
                 http_response_code(403);
                 echo json_encode(["error" => "Hesabınız pasif durumdadır."]);
@@ -50,8 +50,8 @@ if ($method === 'POST') {
                     "id" => $user['ID'],
                     "name" => $user['Ad'] . ' ' . $user['Soyad'],
                     "email" => $user['Email'],
-                    "role" => $user['System_role'], 
-                    "token" => $fake_token 
+                    "role" => $user['System_role'],
+                    "token" => $fake_token
                 ]
             ]);
             exit;
@@ -59,7 +59,6 @@ if ($method === 'POST') {
             http_response_code(401);
             echo json_encode(["error" => "Hatalı e-posta veya şifre girdiniz!"]);
         }
-
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(["error" => "Sistem Hatası: " . $e->getMessage()]);

@@ -26,6 +26,7 @@ import EmployeeExaminations from './pages/EmployeeExaminations';
 import EmployeeCertificates from './pages/EmployeeCertificates';
 import ChangePassword from './pages/ChangePassword';
 import DashboardSelection from './pages/DashboardSelection';
+import AdminPanel from './pages/AdminPanel';
 
 
 function App() {
@@ -62,6 +63,9 @@ function App() {
         <Route path="/employee/change-password" element={<ChangePassword />} />
         
         <Route path="/dashboard-selection" element={<DashboardSelection />} />
+        <Route path="/admin-panel" element={<AdminPanel/>}/>
+
+
 
 
 
