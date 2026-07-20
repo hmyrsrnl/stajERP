@@ -64,10 +64,8 @@ function DashboardSelection() {
       />
 
       <div style={{ marginTop: '30px', textAlign: 'left' }}>
-        <h2 style={{ color: '#334155', margin: '0 0 10px 0' }}>Lütfen Giriş Yapmak İstediğiniz Modülü Seçin</h2>
-        <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '30px' }}>
-          Mevcut yetkiniz: <strong style={{ color: '#0f172a', textTransform: 'uppercase' }}>{systemRole}</strong>
-        </p>
+        <h2 style={{ color: '#334155', margin: '0 0 10px 0', textAlign:'center' }}>Lütfen Giriş Yapmak İstediğiniz Modülü Seçin</h2>
+        
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           {accessiblePanels.map(panel => (

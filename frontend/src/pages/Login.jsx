@@ -31,6 +31,15 @@ function Login() {
           navigate('/dashboard-selection');
         }
       })
+      .catch(err => {
+        console.error("Giriş hatası:", err);
+
+        if (err.response && err.response.data && err.response.data.error) {
+          setMessage(err.response.data.error);
+        } else {
+          setMessage("Giriş yapılırken bir hata oluştu veya sunucuya erişilemedi.");
+        }
+      });
   };
 
   return (

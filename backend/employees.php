@@ -43,6 +43,7 @@ if ($method === 'GET') {
                     c.TCKimlikNo AS tc_no,
                     c.Ad AS first_name,
                     c.Soyad AS last_name,
+                    c.Cinsiyet AS gender,
                     c.Unvan AS role_name,
                     c.TelNo AS phone_number,
                     c.Email AS email,
