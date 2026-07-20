@@ -5,13 +5,13 @@ import Button from '../components/atoms/Button';
 import EmployeeTable from '../components/organisms/EmployeeTable';
 import Header from '../components/organisms/Header';
 import FilterPanel from '../components/organisms/FilterPanel';
+import * as XLSX from 'xlsx';
 
 function HRPanel() {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
 
-  // 🎯 Filtreleme State Yapıları
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenders, setSelectedGenders] = useState([]);
   const [selectedDepts, setSelectedDepts] = useState([]);
@@ -27,12 +27,10 @@ function HRPanel() {
     fetchEmployees();
   }, []);
 
-  // 🔹 Gelen çalışan verilerinden dinamik olarak benzersiz departman listesi üretiyoruz
   const departmentsList = employees 
     ? [...new Set(employees.map(emp => emp.department_name).filter(Boolean))] 
     : [];
 
-  // 🔄 Checkbox State Değişim İşleyicileri
   const handleGenderChange = (gender) => {
     selectedGenders.includes(gender)
       ? setSelectedGenders(selectedGenders.filter(g => g !== gender))
@@ -51,23 +49,41 @@ function HRPanel() {
       : setSelectedStatus([...selectedStatus, status]);
   };
 
-  // 🎛️ Gelişmiş Çoklu Filtreleme Süzgeci
   const filteredEmployees = employees.filter(emp => {
-    // 1. İsim Arama Kontrolü
     const fullName = `${emp.first_name || ''} ${emp.last_name || ''}`.toLowerCase();
     const matchesSearch = fullName.includes(searchTerm.toLowerCase());
-    
-    // 2. Cinsiyet Kontrolü (Veritabanından gelen 'gender' alanına göre)
     const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(emp.gender);
-    
-    // 3. Departman Kontrolü
     const matchesDept = selectedDepts.length === 0 || selectedDepts.includes(emp.department_name);
-
-    // 4. Durum Kontrolü (Veritabanından gelen 'status' alanına göre)
     const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(emp.status);
 
     return matchesSearch && matchesGender && matchesDept && matchesStatus;
   });
+
+  const handleExportToExcel = () => {
+    if (filteredEmployees.length === 0) {
+      alert("İndirilecek filtrelenmiş veri bulunamadı!");
+      return;
+    }
+
+    const excelData = filteredEmployees.map(emp => ({
+      'T.C. Kimlik No': emp.tc_no || '',
+      'Adı': emp.first_name || emp.Ad || '',
+      'Soyadı': emp.last_name || emp.Soyad || '',
+      'E-posta Adresi': emp.email || emp.Email || '',
+      'Telefon Numarası': emp.phone_number || emp.TelNo || '',
+      'Departman': emp.department_name || 'Belirtilmemiş',
+      'Unvan / Rol': emp.role_name || emp.Unvan || '',
+      'Cinsiyet': emp.gender || emp.Cinsiyet || '',
+      'Çalışan Durumu': emp.status || emp.Status || '',
+      'İkamet Adresi': emp.home_address || emp.Adres || ''
+      
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Personel Listesi");
+    XLSX.writeFile(workbook, "Filtrelenmiş_Personel_Listesi.xlsx");
+  };
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '75%', margin: '30px auto' }}>
@@ -89,7 +105,6 @@ function HRPanel() {
 
       <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginTop: '20px' }}>
         
-        {/* 🧩 Atomic Design Filtre Paneli Organizması */}
         <FilterPanel 
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -100,6 +115,7 @@ function HRPanel() {
           onDeptChange={handleDeptChange}
           selectedStatus={selectedStatus}
           onStatusChange={handleStatusChange}
+          onExport={handleExportToExcel}
         />
 
         <div style={{ flex: 1, background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6', minHeight: '400px' }}>

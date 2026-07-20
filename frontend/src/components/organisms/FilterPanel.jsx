@@ -1,5 +1,6 @@
 import React from 'react';
 import FilterGroup from '../molecules/FilterGroup';
+import Button from '../atoms/Button'; 
 
 function FilterPanel({
     searchTerm,
@@ -7,11 +8,14 @@ function FilterPanel({
     departments = [],
     selectedGenders = [],
     onGenderChange,
+    selectedDepts = [],   
+    onDeptChange,        
     selectedStatus = [],
     onStatusChange,
     showDepartments = true,
     showGenders = true, 
-    themeColor = '#f7a33c'
+    themeColor = '#f7a33c',
+    onExport
 }) {
     return (
         <div style={{
@@ -70,18 +74,43 @@ function FilterPanel({
                     </label>
                     <FilterGroup
                         items={departments}
-                        selectedItems={selectedGenders}
-                        onItemChange={onGenderChange}
+                        selectedItems={selectedDepts} 
+                        onItemChange={onDeptChange}    
                     />
                 </div>
             )}
 
-            <FilterGroup
-                title="Çalışan Durumu"
-                items={['Aktif', 'Pasif']}
-                selectedItems={selectedStatus}
-                onItemChange={onStatusChange}
-            />
+            <div style={{ marginBottom: '25px' }}>
+                <FilterGroup
+                    title="Çalışan Durumu"
+                    items={['Aktif', 'Pasif']}
+                    selectedItems={selectedStatus}
+                    onItemChange={onStatusChange}
+                />
+            </div>
+
+            {onExport && (
+                <Button 
+                    onClick={onExport}
+                    style={{
+                        width: '100%',
+                        padding: '10px',
+                        background: '#1f804e', 
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '20px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '13px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    Excel Olarak İndir
+                </Button>
+            )}
         </div>
     );
 }

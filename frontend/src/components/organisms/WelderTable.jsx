@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '../atoms/Button';
 import axios from 'axios';
+import ExpiryWarning from '../molecules/ExpiryWarning';
 
 function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
   if (!certificates || certificates.length === 0) {
@@ -20,7 +21,7 @@ function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
       axios.post(`http://localhost/stajERP/backend/quality_control.php?action=delete&id=${cert.id}`, { id: cert.id })
         .then(res => {
           alert(res.data.message);
-          if (onDeleteSuccess) onDeleteSuccess(); 
+          if (onDeleteSuccess) onDeleteSuccess();
         })
         .catch(err => {
           console.error("Silme hatası:", err);
@@ -47,7 +48,10 @@ function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
               <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{cert.certificate_name}</td>
               <td style={{ padding: '12px 10px' }}>{cert.category_name}</td>
               <td style={{ padding: '12px 10px', color: '#e65100', fontWeight: '500' }}>{cert.level || '-'}</td>
-              <td style={{ padding: '12px 10px' }}>{cert.expiry_date}</td>
+              <td style={{ padding: '12px 10px' }}>
+                {cert.expiry_date || 'Süresiz'}
+                <ExpiryWarning expiryDate={cert.expiry_date} />
+              </td>
               <td style={{ padding: '12px 10px', textAlign: 'center' }}>
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                   <Button
@@ -56,7 +60,7 @@ function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
                   >
                     Düzenle
                   </Button>
-                  
+
                   <Button
                     onClick={() => handleDeleteCertificate(cert)}
                     style={{ background: '#d32f2f', padding: '6px 12px', fontSize: '13px' }}

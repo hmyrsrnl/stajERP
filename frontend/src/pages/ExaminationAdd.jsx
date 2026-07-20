@@ -39,7 +39,8 @@ function ExaminationAdd() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #4db6ac', paddingBottom: '10px' }}>
         <h2 style={{ color: '#00796b' }}>Yeni Muayene Girişi</h2>
-        <Button onClick={navigate(`/infirmary/employee/${id}`)} style={{ background: '#6c757d' }}>
+        
+        <Button onClick={() => navigate(`/infirmary/employee/${id}`)} style={{ background: '#6c757d' }}>
           İptal Et
         </Button>
       </div>

@@ -1,7 +1,9 @@
 import React from 'react';
+import axios from 'axios'; 
 import Button from '../atoms/Button';
 
-function ExaminationTable({ examinations, onEditClick, isReadOnly = false }) {
+function ExaminationTable({ examinations, onEditClick, onDeleteSuccess, isReadOnly = false }) {
+  
   if (examinations.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '30px', color: '#777', fontStyle: 'italic' }}>
@@ -9,6 +11,26 @@ function ExaminationTable({ examinations, onEditClick, isReadOnly = false }) {
       </div>
     );
   }
+
+  const handleDeleteExamination = (exam) => {
+    const confirmDelete = window.confirm(
+      `"${exam.exam_type} - ${exam.result}" muayene kaydını sistemden tamamen silmek istediğinize emin misiniz?`
+    );
+
+    if (confirmDelete) {
+      axios.post(`http://localhost/stajERP/backend/infirmary.php?action=delete`, { id: exam.id })
+        .then(res => {
+          alert(res.data.message || "Muayene başarıyla silindi.");
+          if (onDeleteSuccess) {
+            onDeleteSuccess(); 
+          }
+        })
+        .catch(err => {
+          console.error("Silme hatası:", err);
+          alert(err.response?.data?.error || "Muayene silinirken bir hata oluştu.");
+        });
+    }
+  };
 
   return (
     <div style={{ overflowX: 'auto' }}>
@@ -45,13 +67,21 @@ function ExaminationTable({ examinations, onEditClick, isReadOnly = false }) {
               <td style={{ padding: '12px 10px', fontStyle: 'italic' }}>{exam.doctor_name || 'Bilinmeyen Hekim'}</td>
               
               {!isReadOnly && (
-                <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                  <Button 
-                    onClick={() => onEditClick && onEditClick(exam.id)} 
-                    style={{ padding: '5px 10px', fontSize: '12px', background: '#12a48c' }}
-                  >
-                    Düzenle
-                  </Button>
+                <td style={{ padding: '12px 10px' }}>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <Button 
+                      onClick={() => onEditClick && onEditClick(exam.id)} 
+                      style={{ padding: '5px 10px', fontSize: '12px', background: '#12a48c', color: 'white' }}
+                    >
+                      Düzenle
+                    </Button>
+                    <Button
+                      onClick={() => handleDeleteExamination(exam)} 
+                      style={{ background: '#d32f2f', color: 'white', padding: '5px 10px', fontSize: '12px' }}
+                    >
+                      Sil
+                    </Button>
+                  </div>
                 </td>
               )}
             </tr>

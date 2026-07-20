@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Pagination from '../molecules/Pagination'; // 🎯 Yeni molekülümüzü import ettik
 
 const departmentColors = {
   'İnsan Kaynakları': { bg: '#fdf4e9', text: '#d97706', button: '#f7a33c' },
@@ -10,14 +11,29 @@ const departmentColors = {
 const defaultColor = { bg: '#f3f4f6', text: '#4b5563', button: '#c81919' };
 
 function EmployeeTable({ employees, onSelectEmployee, onEditEmployee, allEmployeesLength }) {
+ 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; 
+
+  const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  
+  const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
+
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1);
+  }
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {employees.length === 0 ? (
+      
+      {currentEmployees.length === 0 ? (
         <p style={{ color: '#777', fontStyle: 'italic', textAlign: 'left', padding: '10px', margin: 0 }}>
           {allEmployeesLength === 0 ? 'Henüz kayıtlı çalışan yok.' : 'Aradığınız kriterlere uygun çalışan bulunamadı.'}
         </p>
       ) : (
-        employees.map(emp => {
+        currentEmployees.map(emp => {
           const colors = departmentColors[emp.role_name] || departmentColors[emp.role] || defaultColor;
 
           return (
@@ -74,6 +90,13 @@ function EmployeeTable({ employees, onSelectEmployee, onEditEmployee, allEmploye
           );
         })
       )}
+
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+      />
+
     </div>
   );
 }

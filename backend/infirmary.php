@@ -17,6 +17,37 @@ $action = $_GET['action'] ?? '';
 $employee_id = $_GET['employee_id'] ?? null;
 $examination_id = $_GET['examination_id'] ?? null;
 
+if (($method === 'POST' && $action === 'delete') || $method === 'DELETE') {
+    $json = file_get_contents("php://input");
+    $data = json_decode($json, true);
+    
+    $cert_id = $data['id'] ?? $_POST['id'] ?? $_GET['id'] ?? null;
+
+    if (!$cert_id) {
+        http_response_code(400);
+        echo json_encode([
+            "error" => "Silinecek muayenenin ID bilgisi eksik! Gönderilen veri okunamadı.",
+            "debug_received_data" => $data,
+            "debug_get" => $_GET
+        ]);
+        exit;
+    }
+
+    try {
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $sql = "DELETE FROM Muayene WHERE ID = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$cert_id]);
+
+        echo json_encode(["message" => "Muayene başarıyla sistemden silindi."]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error" => "Muayene silinirken veritabanı hatası oluştu: " . $e->getMessage()]);
+    }
+    exit;
+}
+
 if ($method === 'GET' && $action === 'list' && $employee_id) {
     try {
         $sql = "SELECT 
