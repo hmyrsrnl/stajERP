@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/organisms/Header';
 import Button from '../components/atoms/Button';
+import NotificationBanner from '../components/molecules/NotificationBanner'; // 🎯 Atomik Molekülümüz
 
 function EmployeeDashboard() {
   const navigate = useNavigate();
   const [employeeInfo, setEmployeeInfo] = useState(null);
+  const [notifications, setNotifications] = useState([]);
   const employeeId = localStorage.getItem('employee_id');
 
   useEffect(() => {
@@ -16,6 +18,7 @@ function EmployeeDashboard() {
       return;
     }
 
+    // Çalışan Detaylarını Çek
     axios.get(`http://localhost/stajERP/backend/employee_detail.php?id=${employeeId}`)
       .then(res => {
         if (res.data) {
@@ -26,6 +29,16 @@ function EmployeeDashboard() {
         console.error("Çalışan bilgisi çekilemedi:", err);
         alert("Oturum bilgileri doğrulanırken bir hata oluştu!");
       });
+
+    // Çalışana Atılan Bildirimleri Çek
+    axios.get(`http://localhost/stajERP/backend/notifications.php?action=list&employee_id=${employeeId}`)
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setNotifications(res.data);
+        }
+      })
+      .catch(err => console.error("Bildirimler çekilemedi:", err));
+
   }, [employeeId, navigate]);
 
   const handleLogout = () => {
@@ -43,7 +56,7 @@ function EmployeeDashboard() {
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '50%', margin: '20px auto' }}>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '60%', margin: '20px auto' }}>
 
       <Header
         title={`Hoş Geldiniz, ${employeeInfo.first_name} ${employeeInfo.last_name}`}
@@ -53,6 +66,10 @@ function EmployeeDashboard() {
         onClick={handleLogout}
       />
 
+      {/* 🎯 ATOMIC MOLEKÜL: Bildirim Katmanı */}
+      <NotificationBanner notifications={notifications} />
+
+      {/* PROFİL VE AKSİYON BUTONLARI */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
 
         <div style={{ background: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6', textAlign: 'left' }}>
@@ -73,28 +90,28 @@ function EmployeeDashboard() {
 
           <Button
             onClick={() => navigate('/employee/change-password')}
-            style={{ padding: '18px', background: '#5484a4', fontSize: '16px', borderRadius: '8px' }}
+            style={{ padding: '18px', background: '#5484a4', fontSize: '16px', borderRadius: '8px', color: 'white' }}
           >
             Şifremi Değiştir
           </Button>
 
           <Button
             onClick={() => navigate('/employee/requests')}
-            style={{ padding: '18px', background: '#5484a4', fontSize: '16px', borderRadius: '8px' }}
+            style={{ padding: '18px', background: '#5484a4', fontSize: '16px', borderRadius: '8px', color: 'white' }}
           >
             Departman Taleplerinde Bulun
           </Button>
 
           <Button
             onClick={() => navigate('/employee/examinations')}
-            style={{ padding: '18px', background: '#5e93b7', fontSize: '16px', borderRadius: '8px' }}
+            style={{ padding: '18px', background: '#5e93b7', fontSize: '16px', borderRadius: '8px', color: 'white' }}
           >
             Geçmiş Muayeneleri Gör
           </Button>
 
           <Button
             onClick={() => navigate('/employee/certificates')}
-            style={{ padding: '18px', background: '#669fc5', fontSize: '16px', borderRadius: '8px' }}
+            style={{ padding: '18px', background: '#669fc5', fontSize: '16px', borderRadius: '8px', color: 'white' }}
           >
             Sertifikalarımı Görüntüle
           </Button>

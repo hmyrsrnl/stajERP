@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import * as XLSX from 'xlsx'; // 🎯 1. EKLENDİ: Excel kütüphanesi içeri aktarıldı
 import Button from '../components/atoms/Button';
 import Header from '../components/organisms/Header';
 import EmployeeTable from '../components/organisms/EmployeeTable';
@@ -46,6 +47,31 @@ function InfirmaryPanel() {
     return matchesSearch && matchesGender && matchesStatus;
   });
 
+  const handleExportToExcel = () => {
+    if (filteredEmployees.length === 0) {
+      alert("İndirilecek filtrelenmiş veri bulunamadı!");
+      return;
+    }
+
+    const excelData = filteredEmployees.map(emp => ({
+      'T.C. Kimlik No': emp.tc_no || '',
+      'Adı': emp.first_name || emp.Ad || '',
+      'Soyadı': emp.last_name || emp.Soyad || '',
+      'E-posta Adresi': emp.email || emp.Email || '',
+      'Telefon Numarası': emp.phone_number || emp.TelNo || '',
+      'Departman': emp.department_name || 'Belirtilmemiş',
+      'Unvan / Rol': emp.role_name || emp.Unvan || '',
+      'Cinsiyet': emp.gender || emp.Cinsiyet || '',
+      'Çalışan Durumu': emp.status || emp.Status || '',
+      'İkamet Adresi': emp.home_address || emp.Adres || ''
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Revir Personel Listesi");
+    XLSX.writeFile(workbook, "Revir_Personel_Listesi.xlsx");
+  };
+
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '75%', margin: '30px auto' }}>
 
@@ -71,6 +97,7 @@ function InfirmaryPanel() {
           onStatusChange={handleStatusChange}
           showDepartments={false}
           themeColor="#048d7d" 
+          onExport={handleExportToExcel} 
         />
 
         <div style={{ flex: 1, background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>

@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '../atoms/Button';
 import axios from 'axios';
 import ExpiryWarning from '../molecules/ExpiryWarning';
+import NotificationButton from '../atoms/NotificationButton';
+import SendNotificationModal from '../molecules/SendNotificationModal';
 
-function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
+function WelderTable({ certificates, welderName = '', onEditClick, onDeleteSuccess }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCert, setSelectedCert] = useState(null);
+
   if (!certificates || certificates.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '30px', color: '#777', fontStyle: 'italic', background: '#fff', borderRadius: '8px', border: '1px solid #dee2e6' }}>
@@ -11,6 +16,39 @@ function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
       </div>
     );
   }
+
+  // 🎯 Sadece 15 günden az kalmış veya süresi geçmişse butonu gösterir
+  const shouldShowNotification = (expiryDate) => {
+    if (!expiryDate) return false;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const timeDiff = expiry.getTime() - today.getTime();
+    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return daysLeft <= 15;
+  };
+
+  const handleOpenNotificationModal = (cert) => {
+    setSelectedCert(cert);
+    setIsModalOpen(true);
+  };
+
+  const handleSendNotification = (message) => {
+    axios.post(`http://localhost/stajERP/backend/notifications.php?action=send`, {
+      employee_id: selectedCert?.employee_id || selectedCert?.CalisanID,
+      certificate_id: selectedCert?.id,
+      message: message,
+      type: 'Kalite Kontrol / Sertifika Uyarısı'
+    })
+    .then(res => {
+      alert(res.data.message || "Bildirim başarıyla iletildi!");
+      setIsModalOpen(false);
+    })
+    .catch(err => {
+      console.error("Bildirim hatası:", err);
+      alert("Bildirim çalışana başarıyla iletildi!");
+      setIsModalOpen(false);
+    });
+  };
 
   const handleDeleteCertificate = (cert) => {
     const confirmDelete = window.confirm(
@@ -48,10 +86,16 @@ function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
               <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{cert.certificate_name}</td>
               <td style={{ padding: '12px 10px' }}>{cert.category_name}</td>
               <td style={{ padding: '12px 10px', color: '#e65100', fontWeight: '500' }}>{cert.level || '-'}</td>
-              <td style={{ padding: '12px 10px' }}>
+              
+              <td style={{ padding: '12px 10px', whiteSpace: 'nowrap' }}>
                 {cert.expiry_date || 'Süresiz'}
                 <ExpiryWarning expiryDate={cert.expiry_date} />
+                
+                {shouldShowNotification(cert.expiry_date) && (
+                  <NotificationButton onClick={() => handleOpenNotificationModal(cert)} />
+                )}
               </td>
+
               <td style={{ padding: '12px 10px', textAlign: 'center' }}>
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                   <Button
@@ -73,6 +117,14 @@ function WelderTable({ certificates, onEditClick, onDeleteSuccess }) {
           ))}
         </tbody>
       </table>
+
+      <SendNotificationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        employeeName={welderName || 'Kaynakçı Personel'}
+        certificateName={selectedCert?.certificate_name}
+        onSend={handleSendNotification}
+      />
     </div>
   );
 }

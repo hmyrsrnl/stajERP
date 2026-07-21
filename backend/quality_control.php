@@ -62,12 +62,12 @@ if ($method === 'GET' && $action === 'list' && $employee_id) {
                 FROM CalisanSertifika cs
                 JOIN SertifikaTur st ON cs.SertifikaTurID = st.ID
                 JOIN SertifikaKategori sk ON st.SertifikaKategoriID = sk.ID
-                WHERE cs.CalisanID = ?
+                WHERE cs.CalisanID = ? AND sk.KategoriAdi IN ('Teknik', 'Kalite') 
                 ORDER BY cs.BitisTarihi ASC"; 
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$employee_id]);
-        echo json_encode($stmt->fetchAll());
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC)); 
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(["error" => "Sertifikalar listelenemedi: " . $e->getMessage()]);

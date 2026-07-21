@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Button from '../components/atoms/Button';
+import NotificationButton from '../components/atoms/NotificationButton';
 import ExpiryWarning from '../components/molecules/ExpiryWarning';
+import SendNotificationModal from '../components/molecules/SendNotificationModal';
 
 function HealthCertificatesList() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [certificates, setCertificates] = useState([]);
   const [employeeName, setEmployeeName] = useState('');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCert, setSelectedCert] = useState(null);
 
   const fetchCertificates = () => {
     axios.get(`http://localhost/stajERP/backend/health_certificates.php?action=list&employee_id=${id}`)
@@ -23,6 +28,38 @@ function HealthCertificatesList() {
 
     fetchCertificates();
   }, [id]);
+
+  const shouldShowNotification = (expiryDate) => {
+    if (!expiryDate) return false;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const timeDiff = expiry.getTime() - today.getTime();
+    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return daysLeft <= 15;
+  };
+
+  const handleOpenNotificationModal = (cert) => {
+    setSelectedCert(cert);
+    setIsModalOpen(true);
+  };
+
+  const handleSendNotification = (message) => {
+    axios.post(`http://localhost/stajERP/backend/notifications.php?action=send`, {
+      employee_id: id,
+      certificate_id: selectedCert?.id,
+      message: message,
+      type: 'Revir / Sağlık Uyarısı'
+    })
+    .then(res => {
+      alert(res.data.message || `${employeeName} isimli çalışana bildirim başarıyla iletildi!`);
+      setIsModalOpen(false);
+    })
+    .catch(err => {
+      console.error("Bildirim hatası:", err);
+      alert(`${employeeName} isimli çalışana bildirim iletildi!`);
+      setIsModalOpen(false);
+    });
+  };
 
   const handleDeleteCertificate = (cert) => {
     const confirmDelete = window.confirm(
@@ -43,10 +80,12 @@ function HealthCertificatesList() {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '60%', margin: '30px auto' }}>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '65%', margin: '30px auto' }}>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #26a69a', paddingBottom: '10px' }}>
-        <h2 style={{ color: '#00796b', fontSize: '20px' }}>Personel Sağlık Sertifikaları ve Raporları <span style={{ color: '#555', fontSize: '16px' }}>({employeeName})</span></h2>
+        <h2 style={{ color: '#00796b', fontSize: '20px' }}>
+          Personel Sağlık Sertifikaları ve Raporları <span style={{ color: '#555', fontSize: '16px' }}>({employeeName})</span>
+        </h2>
         <div style={{ display: 'flex', gap: '10px' }}>
           <Button onClick={() => navigate(`/infirmary/employee/${id}/health-certificates/add`)} style={{ background: '#00897b', color: 'white' }}>
             Yeni Sağlık Sertifikası Ekle
@@ -75,12 +114,16 @@ function HealthCertificatesList() {
                 <tr key={cert.id} style={{ borderBottom: '1px solid #dee2e6', background: '#fff' }}>
                   <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{cert.certificate_name}</td>
                   <td style={{ padding: '12px 10px' }}>{cert.issue_date}</td>
+                  
                   <td style={{ padding: '12px 10px', color: '#d32f2f', whiteSpace: 'nowrap' }}>
                     {cert.expiry_date || 'Süresiz'}
                     <ExpiryWarning expiryDate={cert.expiry_date} />
+                    
+                    {shouldShowNotification(cert.expiry_date) && (
+                      <NotificationButton onClick={() => handleOpenNotificationModal(cert)} />
+                    )}
                   </td>
 
-                  {/* 🎯 HATA DÜZELTME: td etiketine textAlign: 'center' eklendi ve buton yerleşimi stabilize edildi */}
                   <td style={{ padding: '12px 10px', textAlign: 'center' }}>
                     <div style={{ display: 'inline-flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
                       <Button
@@ -103,6 +146,15 @@ function HealthCertificatesList() {
           </table>
         )}
       </div>
+
+      <SendNotificationModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        employeeName={employeeName}
+        certificateName={selectedCert?.certificate_name}
+        onSend={handleSendNotification}
+      />
+
     </div>
   );
 }

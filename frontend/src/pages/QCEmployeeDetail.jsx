@@ -49,6 +49,7 @@ function QCEmployeeDetail() {
 
       <WelderTable
         certificates={certificates}
+        welderName={`${weldInfo.first_name} ${weldInfo.last_name}`}
         onEditClick={(certId) => navigate(`/qc/edit-certificate/${certId}`)}
         onDeleteSuccess={fetchCertificates} 
       />
