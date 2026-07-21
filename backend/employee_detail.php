@@ -22,29 +22,45 @@ if (!$id) {
     exit;
 }
 
-if ($method === 'GET') {
-    try {
-        $sql = "SELECT 
-                    ID AS id, TCKimlikNo AS tc_no, Ad AS first_name, Soyad AS last_name,
-                    Unvan AS role_name, TelNo AS phone_number, Email AS email,
-                    Adres AS home_address, Status AS status, System_role AS system_role,
-                    DepartmanID AS department_id, Maas AS maas, DogumTarihi AS dogum_tarihi
-                FROM Calisan WHERE ID = ?";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id]);
-        $employee = $stmt->fetch();
+if (!$id) {
+    http_response_code(400);
+    echo json_encode(["error" => "ID parametresi eksik."]);
+    exit;
+}
 
-        if ($employee) {
-            echo json_encode($employee);
-        } else {
-            http_response_code(404);
-            echo json_encode(["error" => "Çalışan bulunamadı!"]);
-        }
-    } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(["error" => "Veri getirme hatası: " . $e->getMessage()]);
+try {
+    $sql = "SELECT 
+                c.ID AS id,
+                c.TCKimlikNo AS tc_no,
+                c.Ad AS first_name,
+                c.Soyad AS last_name,
+                c.Cinsiyet AS gender,
+                c.Unvan AS role_name,
+                c.TelNo AS phone_number,
+                c.Email AS email,
+                c.Adres AS home_address,
+                c.Status AS status,
+                c.IsBaslangicTarihi AS hire_date,   
+                c.Created_at AS created_at,         
+                c.Updated_at AS updated_at,         
+                d.DepartmanAdı AS department_name
+            FROM Calisan c
+            LEFT JOIN Departman d ON c.DepartmanID = d.ID
+            WHERE c.ID = ?";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$id]);
+    $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($employee) {
+        echo json_encode($employee);
+    } else {
+        http_response_code(404);
+        echo json_encode(["error" => "Çalışan bulunamadı."]);
     }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Veritabanı hatası: " . $e->getMessage()]);
 }
 
 if ($method === 'POST') {

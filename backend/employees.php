@@ -49,7 +49,9 @@ if ($method === 'GET') {
                     c.Email AS email,
                     c.Adres AS home_address,
                     c.Status AS status,
-                    c.Created_at AS created_at,
+                    c.IsBaslangicTarihi AS hire_date,   
+                    c.Created_at AS created_at,        
+                    c.Updated_at AS updated_at,        
                     d.DepartmanAdı AS department_name
                 FROM Calisan c
                 LEFT JOIN Departman d ON c.DepartmanID = d.ID";

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 import Button from '../components/atoms/Button';
 import EmployeeTable from '../components/organisms/EmployeeTable';
 import Header from '../components/organisms/Header';
 import FilterPanel from '../components/organisms/FilterPanel';
-import * as XLSX from 'xlsx';
 
 function HRPanel() {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
-  const [pendingRequests, setPendingRequests] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenders, setSelectedGenders] = useState([]);
@@ -75,32 +74,42 @@ function HRPanel() {
       'Unvan / Rol': emp.role_name || emp.Unvan || '',
       'Cinsiyet': emp.gender || emp.Cinsiyet || '',
       'Çalışan Durumu': emp.status || emp.Status || '',
-      'İkamet Adresi': emp.home_address || emp.Adres || ''
-      
+      'İkamet Adresi': emp.home_address || emp.Adres || '',
+      'İşe Başlangıç Tarihi': emp.hire_date || '',
+      'Kayıt Tarihi': emp.created_at || '',
+      'Son Güncelleme': emp.updated_at || ''
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Personel Listesi");
-    XLSX.writeFile(workbook, "Filtrelenmiş_Personel_Listesi.xlsx");
+    XLSX.writeFile(workbook, "İK_Personel_Listesi.xlsx");
   };
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '75%', margin: '30px auto' }}>
 
       <Header title="İnsan Kaynakları Ana Sayfa" backgroundColor="#f7a33c">
-        <Button onClick={() => navigate('/hr/hr-requests')}
-          style={{ padding: '8px 15px', background: '#f3a77b', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>
-          Talepler
-        </Button>
-        <Button onClick={() => navigate('/hr/add-employee')}
-          style={{ padding: '8px 15px', background: '#f4894c', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>
-          Yeni Çalışan Ekleme
-        </Button>
-        <Button onClick={() => { localStorage.clear(); navigate('/'); }}
-          style={{ padding: '8px 15px', background: '#ff0000', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer' }}>
-          Çıkış
-        </Button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <Button 
+            onClick={() => navigate('/hr/hr-requests')}
+            style={{ padding: '8px 15px', background: '#f3a77b', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Talepler
+          </Button>
+          <Button 
+            onClick={() => navigate('/hr/add-employee')}
+            style={{ padding: '8px 15px', background: '#f4894c', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Yeni Çalışan Ekleme
+          </Button>
+          <Button 
+            onClick={() => { localStorage.clear(); navigate('/'); }}
+            style={{ padding: '8px 15px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Çıkış
+          </Button>
+        </div>
       </Header>
 
       <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginTop: '20px' }}>
@@ -116,6 +125,7 @@ function HRPanel() {
           selectedStatus={selectedStatus}
           onStatusChange={handleStatusChange}
           onExport={handleExportToExcel}
+          themeColor="#f7a33c"
         />
 
         <div style={{ flex: 1, background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6', minHeight: '400px' }}>

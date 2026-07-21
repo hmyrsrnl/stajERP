@@ -1,7 +1,6 @@
 import React from 'react';
-import Button from '../atoms/Button';
 
-function EmployeeDetailCard({ employee, onClose , onEditClick ,ondeleteClick}) {
+function EmployeeDetailCard({ employee }) {
   if (!employee) return null;
 
   const formatDate = (dateString) => {
@@ -17,12 +16,13 @@ function EmployeeDetailCard({ employee, onClose , onEditClick ,ondeleteClick}) {
       <p><strong>T.C. No:</strong> {employee.tc_no}</p>
       <p><strong>Görev:</strong> {employee.role_name}</p>
       <p><strong>Durum:</strong> <span style={{ color: 'green', fontWeight: 'bold' }}>{employee.status || 'Aktif'}</span></p>
+      
       <p><strong>Oluşturulma Tarihi:</strong> {formatDate(employee.created_at)}</p>
       <p><strong>Güncellenme Tarihi:</strong> {formatDate(employee.updated_at)}</p>
       
-      <p><strong>E-posta:</strong> {employee.email || employee.email_address || 'Girilmedi'}</p>
-      <p><strong>Telefon:</strong> {employee.phone_number || employee.phone || 'Girilmedi'}</p>
-      <p><strong>Ev Adresi:</strong> {employee.home_address || employee.address || 'Girilmedi'}</p>
+      <p><strong>E-posta:</strong> {employee.email || 'Girilmedi'}</p>
+      <p><strong>Telefon:</strong> {employee.phone_number || 'Girilmedi'}</p>
+      <p><strong>Ev Adresi:</strong> {employee.home_address || 'Girilmedi'}</p>
 
     </div>
   );

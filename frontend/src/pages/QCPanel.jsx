@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import * as XLSX from 'xlsx'; // 🎯 1. DÜZELTME: Excel kütüphanesi içeri aktarıldı
+import * as XLSX from 'xlsx'; 
 import EmployeeTable from '../components/organisms/EmployeeTable';
 import Header from '../components/organisms/Header';
 import FilterPanel from '../components/organisms/FilterPanel'; 

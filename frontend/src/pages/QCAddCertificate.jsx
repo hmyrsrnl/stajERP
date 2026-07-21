@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import WelderForm from '../components/organisms/WelderForm';
 import Header from '../components/organisms/Header';
-import Button from '../components/atoms/Button';
+import WelderForm from '../components/organisms/WelderForm';
 
 function QCAddCertificate() {
   const { id } = useParams();
@@ -11,7 +10,9 @@ function QCAddCertificate() {
   const [types, setTypes] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost/stajERP/backend/quality_control.php?action=get_types').then(res => setTypes(res.data));
+    axios.get('http://localhost/stajERP/backend/quality_control.php?action=get_types')
+      .then(res => setTypes(res.data))
+      .catch(err => console.error("Sertifika türleri çekilemedi:", err));
   }, []);
 
   const handleFormSubmit = (formData) => {
@@ -31,28 +32,33 @@ function QCAddCertificate() {
 
     axios.post('http://localhost/stajERP/backend/quality_control.php?action=add', certificateData)
       .then(res => {
-        alert(res.data.message);
+        alert(res.data.message || "Teknik sertifika başarıyla eklendi.");
         navigate(`/qc/employee/${id}`);
       })
-      .catch(err => alert('Sertifika kaydedilemedi!'));
+      .catch(err => {
+        console.error("Sertifika kaydetme hatası:", err);
+        alert('Sertifika kaydedilemedi!');
+      });
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif',  maxWidth: '50%', margin: '30px auto' }}>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '50%', margin: '30px auto' }}>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #e18ce7', paddingBottom: '10px' }}>
-        <h2 style={{ color: '#e18ce7' }}>
-          Yeni Teknik Sertifika Girişi
-        </h2>
-        <Button onClick={() => navigate(`/qc/employee/${id}`)} style={{ background: '#6c757d' }}>İptal</Button>
+      <Header
+        title="Yeni Teknik Sertifika Girişi"
+        backgroundColor="#e18ce7"
+        backPath={`/qc/employee/${id}`}
+        backButtonText="İptal"
+      />
+
+      <div style={{ marginTop: '20px' }}>
+        <WelderForm
+          types={types}
+          onSubmit={handleFormSubmit}
+          onCancel={() => navigate(`/qc/employee/${id}`)}
+        />
       </div>
 
-
-      <WelderForm
-        types={types}
-        onSubmit={handleFormSubmit}
-        onCancel={() => navigate(`/qc/employee/${id}`)}
-      />
     </div>
   );
 }

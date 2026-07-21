@@ -4,8 +4,6 @@ import Button from '../atoms/Button';
 
 function Header({ title, backgroundColor = '#00796b', backPath, backButtonText = 'Geri Dön', children }) {
   const navigate = useNavigate();
-
-  // localstorage'dan login anında saklanan sistem rolünü okuyoruz
   const userRole = localStorage.getItem('system_role');
   const isAdmin = userRole?.toLowerCase() === 'admin';
 

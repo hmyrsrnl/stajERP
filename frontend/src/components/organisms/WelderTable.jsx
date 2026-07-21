@@ -17,7 +17,6 @@ function WelderTable({ certificates, welderName = '', onEditClick, onDeleteSucce
     );
   }
 
-  // 🎯 Sadece 15 günden az kalmış veya süresi geçmişse butonu gösterir
   const shouldShowNotification = (expiryDate) => {
     if (!expiryDate) return false;
     const today = new Date();

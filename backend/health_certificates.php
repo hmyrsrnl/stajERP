@@ -31,8 +31,6 @@ if (($method === 'POST' && $action === 'delete') || $method === 'DELETE') {
 
     try {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        // 🎯 Muayene değil CalisanSertifika silinmeli
         $sql = "DELETE FROM CalisanSertifika WHERE ID = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$cert_id]);

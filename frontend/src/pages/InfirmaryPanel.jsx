@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import * as XLSX from 'xlsx'; // 🎯 1. EKLENDİ: Excel kütüphanesi içeri aktarıldı
+import * as XLSX from 'xlsx';
 import Button from '../components/atoms/Button';
 import Header from '../components/organisms/Header';
 import EmployeeTable from '../components/organisms/EmployeeTable';
@@ -96,8 +96,8 @@ function InfirmaryPanel() {
           selectedStatus={selectedStatus}
           onStatusChange={handleStatusChange}
           showDepartments={false}
-          themeColor="#048d7d" 
-          onExport={handleExportToExcel} 
+          themeColor="#048d7d"
+          onExport={handleExportToExcel}
         />
 
         <div style={{ flex: 1, background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>

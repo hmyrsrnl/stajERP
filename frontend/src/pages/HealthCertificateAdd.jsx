@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Button from '../components/atoms/Button';
+import Header from '../components/organisms/Header';
 import HealthForm from '../components/organisms/HealthForm';
 
 function HealthCertificateAdd() {
@@ -10,7 +10,9 @@ function HealthCertificateAdd() {
   const [types, setTypes] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost/stajERP/backend/health_certificates.php?action=get_types').then(res => setTypes(res.data));
+    axios.get('http://localhost/stajERP/backend/health_certificates.php?action=get_types')
+      .then(res => setTypes(res.data))
+      .catch(err => console.error("Sertifika türleri yüklenemedi:", err));
   }, []);
 
   const handleFormSubmit = (formData) => {
@@ -30,26 +32,33 @@ function HealthCertificateAdd() {
 
     axios.post('http://localhost/stajERP/backend/health_certificates.php?action=add', data)
       .then(res => {
-        alert(res.data.message);
+        alert(res.data.message || 'Sağlık sertifikası başarıyla eklendi.');
         navigate(`/infirmary/employee/${id}/health-certificates`);
       })
-      .catch(err => alert('Sertifika eklenemedi.'));
+      .catch(err => {
+        console.error("Sertifika ekleme hatası:", err);
+        alert('Sertifika eklenemedi.');
+      });
   };
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '50%', margin: '30px auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #26a69a', paddingBottom: '10px' }}>
-        <h2 style={{ color: '#00796b' }}>
-          Yeni Sağlık Raporu / Sertifikası Ekle
-        </h2>
-        <Button onClick={() => navigate(`/infirmary/employee/${employeeId}/health-certificates`)} style={{ background: '#6c757d' }}>İptal</Button>
+      
+      <Header
+        title="Yeni Sağlık Raporu / Sertifikası Ekle"
+        backgroundColor="#00796b"
+        backPath={`/infirmary/employee/${id}/health-certificates`}
+        backButtonText="İptal"
+      />
+
+      <div style={{ marginTop: '20px' }}>
+        <HealthForm
+          types={types}
+          onSubmit={handleFormSubmit}
+          onCancel={() => navigate(`/infirmary/employee/${id}/health-certificates`)}
+        />
       </div>
 
-      <HealthForm
-        types={types}
-        onSubmit={handleFormSubmit}
-        onCancel={() => navigate(`/infirmary/employee/${id}/health-certificates`)}
-      />
     </div>
   );
 }

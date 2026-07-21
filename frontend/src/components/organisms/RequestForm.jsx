@@ -28,7 +28,6 @@ function RequestForm({ onSubmit, departments = [] }) {
         Yeni Talep Oluştur
       </h3>
 
-      {/* Departman Seçim Alanı */}
       <div style={{ marginBottom: '15px' }}>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px' }}>İlgili Departman</label>
         <select
@@ -44,7 +43,6 @@ function RequestForm({ onSubmit, departments = [] }) {
         </select>
       </div>
 
-      {/* Konu Alanı */}
       <div style={{ marginBottom: '15px' }}>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px' }}>Konu</label>
         <input
@@ -57,7 +55,6 @@ function RequestForm({ onSubmit, departments = [] }) {
         />
       </div>
 
-      {/* Açıklama Alanı */}
       <FormTextarea
         label="Talep Açıklaması"
         value={description}

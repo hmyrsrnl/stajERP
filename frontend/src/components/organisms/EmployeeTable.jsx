@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Pagination from '../molecules/Pagination'; // 🎯 Yeni molekülümüzü import ettik
+import Pagination from '../molecules/Pagination'; 
 
 const departmentColors = {
   'İnsan Kaynakları': { bg: '#fdf4e9', text: '#d97706', button: '#f7a33c' },
