@@ -41,7 +41,6 @@ function Login() {
       <LoginForm 
         onSubmit={handleLogin}
         errorMessage={message}
-        onNavigateRegister={() => navigate('/register')}
       />
     </div>
   );

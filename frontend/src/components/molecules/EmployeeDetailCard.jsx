@@ -13,6 +13,7 @@ function EmployeeDetailCard({ employee }) {
     <div style={{ flex: '1', background: '#fff', border: '2px solid #f7a33c', padding: '20px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
     
       <p><strong>Ad Soyad:</strong> {employee.first_name} {employee.last_name}</p>
+      <p><strong>Cinsiyet:</strong> {employee.gender}</p>
       <p><strong>T.C. No:</strong> {employee.tc_no}</p>
       <p><strong>Görev:</strong> {employee.role_name}</p>
       <p><strong>Durum:</strong> <span style={{ color: 'green', fontWeight: 'bold' }}>{employee.status || 'Aktif'}</span></p>

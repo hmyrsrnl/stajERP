@@ -71,6 +71,7 @@ if ($method === 'POST') {
     $first_name   = $data['first_name'] ?? '';
     $last_name    = $data['last_name'] ?? '';
     $email        = $data['email'] ?? '';
+    $gender       = $data['gender'] ??'';
     $phone_number = $data['phone_number'] ?? '';
     $home_address = $data['home_address'] ?? '';
     $role_name    = $data['role_name'] ?? '';
@@ -87,14 +88,14 @@ if ($method === 'POST') {
 
     try {
         $sql = "UPDATE Calisan SET 
-                    DepartmanID = ?, TCKimlikNo = ?, Ad = ?, Soyad = ?, 
+                    DepartmanID = ?, TCKimlikNo = ?, Ad = ?, Soyad = ?, Cinsiyet = ?,
                     Unvan = ?, Maas = ?, Adres = ?, TelNo = ?, 
                     Email = ?, System_role = ?, Status = ?
                 WHERE ID = ?";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            $department_id, $tc_no, $first_name, $last_name,
+            $department_id, $tc_no, $first_name, $last_name, $gender,
             $role_name, $maas, $home_address, $phone_number,
             $email, $system_role, $status, $id
         ]);

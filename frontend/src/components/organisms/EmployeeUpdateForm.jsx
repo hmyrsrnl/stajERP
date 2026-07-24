@@ -4,7 +4,7 @@ import Button from '../atoms/Button';
 
 function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
   const [formData, setFormData] = useState({
-    tc_no: '', first_name: '', last_name: '', email: '',
+    tc_no: '', first_name: '', last_name: '', gender: '', email: '',
     phone_number: '', home_address: '', role_name: '',
     maas: '', system_role: 'calısan', department_id: '', status: 'Aktif'
   });
@@ -28,6 +28,21 @@ function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
     <form onSubmit={handleFormSubmit} style={{ background: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
       <FormField label="T.C. Kimlik No" value={formData.tc_no} onChange={e => handleChange('tc_no', e.target.value)} />
       <FormField label="Ad" value={formData.first_name} onChange={e => handleChange('first_name', e.target.value)} />
+
+      <div style={{ marginBottom: '25px', textAlign: 'left' }}>
+        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px', color: '#333' }}>
+          Cinsiyet
+        </label>
+        <select value={formData.gender} onChange={e => handleChange ('gender', e.target.value)} required
+          style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+        >
+          <option value="" disabled>-- Cinsiyet Seçiniz --</option>
+          <option value="Kadın">Kadın</option>
+          <option value="Erkek">Erkek</option>
+          <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
+        </select>
+      </div>
+
       <FormField label="Soyad" value={formData.last_name} onChange={e => handleChange('last_name', e.target.value)} />
       <FormField label="Telefon" value={formData.phone_number} onChange={e => handleChange('phone_number', e.target.value)} />
       <FormField label="E-posta" value={formData.email} onChange={e => handleChange('email', e.target.value)} />
@@ -38,7 +53,7 @@ function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
       <div style={{ marginBottom: '15px', textAlign: 'left' }}>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px' }}>Departman</label>
         <select value={formData.department_id || ''} onChange={e => handleChange('department_id', e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}>
-          <option value="">-- Departman Yok --</option>
+          <option value="" disabled>-- Departman Yok --</option>
           {departments.map(dept => (
             <option key={dept.id} value={dept.id}>{dept.department_name}</option>
           ))}
@@ -63,9 +78,9 @@ function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
         </select>
       </div>
 
-      <div style={{textAlign: 'center'}}>     
-      <Button type="submit" style ={{background: '#f7a33c'}}>Bilgileri Güncelle</Button>
-      </div>  
+      <div style={{ textAlign: 'center' }}>
+        <Button type="submit" style={{ background: '#f7a33c' }}>Bilgileri Güncelle</Button>
+      </div>
     </form>
   );
 }

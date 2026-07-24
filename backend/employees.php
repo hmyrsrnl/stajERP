@@ -8,7 +8,7 @@ $action = $_GET['action'] ?? '';
 if (($method === 'POST' && $action === 'delete') || $method === 'DELETE') {
     $json = file_get_contents("php://input");
     $data = json_decode($json, true);
-    
+
     $employee_id = $data['id'] ?? $_POST['id'] ?? $_GET['id'] ?? null;
 
     if (!$employee_id) {
@@ -23,7 +23,7 @@ if (($method === 'POST' && $action === 'delete') || $method === 'DELETE') {
 
     try {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
+
         $sql = "DELETE FROM Calisan WHERE ID = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$employee_id]);
@@ -75,13 +75,14 @@ if ($method === 'POST') {
     $first_name   = $data['first_name'] ?? '';
     $last_name    = $data['last_name'] ?? '';
     $email        = $data['email'] ?? '';
-    $password     = $data['password'] ?? '123456'; 
+    $password     = $data['password'] ?? '123456';
+    $gender       = $data['gender'] ?? '';
     $phone_number = $data['phone_number'] ?? '';
     $home_address = $data['home_address'] ?? '';
     $unvan        = $data['role_name'] ?? 'Personel';
     $maas         = $data['maas'] ?? 17002.12;
-    $departmanID  = $data['department_id'] ?? null; 
-    $system_role  = $data['system_role'] ?? 'calısan'; 
+    $departmanID  = $data['department_id'] ?? null;
+    $system_role  = $data['system_role'] ?? 'calısan';
     $dogumTarihi      = $data['dogum_tarihi'] ?? '2000-01-01';
     $isBaslangicTarihi = date("Y-m-d");
 
@@ -94,14 +95,25 @@ if ($method === 'POST') {
     }
 
     try {
-        $sql = "INSERT INTO Calisan (DepartmanID, TCKimlikNo, Ad, Soyad, DogumTarihi, IsBaslangicTarihi, Unvan, Maas, Adres, TelNo, Email, password, System_role, Status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Aktif')";
-        
+        $sql = "INSERT INTO Calisan (DepartmanID, TCKimlikNo, Ad, Soyad, Cinsiyet, DogumTarihi, IsBaslangicTarihi, Unvan, Maas, Adres, TelNo, Email, password, System_role, Status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Aktif')";
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            $departmanID, $tc_no, $first_name, $last_name, $dogumTarihi, 
-            $isBaslangicTarihi, $unvan, $maas, $home_address, $phone_number, 
-            $email, $hashed_password, $system_role
+            $departmanID,
+            $tc_no,
+            $first_name,
+            $last_name,
+            $gender,
+            $dogumTarihi,
+            $isBaslangicTarihi,
+            $unvan,
+            $maas,
+            $home_address,
+            $phone_number,
+            $email,
+            $hashed_password,
+            $system_role
         ]);
 
         echo json_encode(["message" => "Yeni çalışan İK tarafından başarıyla sisteme kaydedildi."]);
@@ -114,4 +126,3 @@ if ($method === 'POST') {
         }
     }
 }
-

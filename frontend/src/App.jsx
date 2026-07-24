@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import HRPanel from './pages/HRPanel';
 import HRRequests from './pages/HRRequests'
 import EmployeeAdd from './pages/EmployeeAdd';
@@ -27,6 +26,7 @@ import EmployeeCertificates from './pages/EmployeeCertificates';
 import ChangePassword from './pages/ChangePassword';
 import DashboardSelection from './pages/DashboardSelection';
 import AdminPanel from './pages/AdminPanel';
+import ProtectedRoute from './components/organisms/ProtectedRoute';
 
 
 function App() {
@@ -34,36 +34,35 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
 
-        <Route path="/hr-panel" element={<HRPanel />} />
-        <Route path="/hr/add-employee" element={<EmployeeAdd />} />
-        <Route path="/hr/employee/:id" element={<EmployeeDetail />} />
-        <Route path="/hr/hr-requests" element={<HRRequests />} />
-        <Route path="/hr/employee/edit/:id" element={<EmployeeUpdate />} />
-        <Route path="/infirmary-panel" element={<InfirmaryPanel />} />
-        <Route path="/infirmary/employee/:id" element={<InfirmaryEmployeeDetail />} />
-        <Route path="/infirmary/employee/:id/add-examination" element={<ExaminationAdd />} />
-        <Route path="/infirmary/employee/:id/history" element={<ExaminationHistory />} />
-        <Route path="/infirmary/examination/edit/:examinationId" element={<ExaminationEdit />} />
-        <Route path="/infirmary/employee/:id/health-certificates" element={<HealthCertificatesList />} />
-        <Route path="/infirmary/employee/:id/health-certificates/add" element={<HealthCertificateAdd />} />
-        <Route path="/infirmary/health-certificates/edit/:certificateId" element={<HealthCertificateEdit />} />
-        <Route path="/infirmary/infirmary-requests" element={<InfirmaryRequests />} />
+        <Route path="/hr-panel" element={<ProtectedRoute> <HRPanel /> </ProtectedRoute> } />
+        <Route path="/hr/add-employee" element={<ProtectedRoute> <EmployeeAdd /> </ProtectedRoute> } />
+        <Route path="/hr/employee/:id" element={<ProtectedRoute> <EmployeeDetail /> </ProtectedRoute>} />
+        <Route path="/hr/hr-requests" element={<ProtectedRoute> <HRRequests /> </ProtectedRoute>} />
+        <Route path="/hr/employee/edit/:id" element={<ProtectedRoute> <EmployeeUpdate /> </ProtectedRoute>} />
+        <Route path="/infirmary-panel" element={<ProtectedRoute> <InfirmaryPanel /> </ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id" element={<ProtectedRoute> <InfirmaryEmployeeDetail /> </ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/add-examination" element={<ProtectedRoute> <ExaminationAdd /> </ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/history" element={<ProtectedRoute> <ExaminationHistory /> </ProtectedRoute>} />
+        <Route path="/infirmary/examination/edit/:examinationId" element={<ProtectedRoute> <ExaminationEdit /> </ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/health-certificates" element={<ProtectedRoute> <HealthCertificatesList /> </ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/health-certificates/add" element={<ProtectedRoute> <HealthCertificateAdd /> </ProtectedRoute>} />
+        <Route path="/infirmary/health-certificates/edit/:certificateId" element={<ProtectedRoute> <HealthCertificateEdit /> </ProtectedRoute>} />
+        <Route path="/infirmary/infirmary-requests" element={<ProtectedRoute> <InfirmaryRequests /> </ProtectedRoute>} />
 
-        <Route path="/qc-panel" element={<QCPanel />} />
-        <Route path="/qc/employee/:id" element={<QCEmployeeDetail />} />
-        <Route path="/qc/employee/:id/add-certificate" element={<QCAddCertificate />} />
-        <Route path="/qc/edit-certificate/:certificateId" element={<QCEditCertificate />} />
+        <Route path="/qc-panel" element={<ProtectedRoute><QCPanel />  </ProtectedRoute>} />
+        <Route path="/qc/employee/:id" element={<ProtectedRoute> <QCEmployeeDetail /> </ProtectedRoute>} />
+        <Route path="/qc/employee/:id/add-certificate" element={<ProtectedRoute> <QCAddCertificate /> </ProtectedRoute>} />
+        <Route path="/qc/edit-certificate/:certificateId" element={<ProtectedRoute> <QCEditCertificate /> </ProtectedRoute>} />
 
-        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-        <Route path="/employee/requests" element={<EmployeeRequests />} />
-        <Route path="/employee/examinations" element={<EmployeeExaminations />} />
-        <Route path="/employee/certificates" element={<EmployeeCertificates />} />
-        <Route path="/employee/change-password" element={<ChangePassword />} />
-        
-        <Route path="/dashboard-selection" element={<DashboardSelection />} />
-        <Route path="/admin-panel" element={<AdminPanel/>}/>
+        <Route path="/employee-dashboard" element={<ProtectedRoute> <EmployeeDashboard /> </ProtectedRoute>} />
+        <Route path="/employee/requests" element={<ProtectedRoute> <EmployeeRequests /> </ProtectedRoute>} />
+        <Route path="/employee/examinations" element={<ProtectedRoute> <EmployeeExaminations /> </ProtectedRoute>} />
+        <Route path="/employee/certificates" element={<ProtectedRoute> <EmployeeCertificates /> </ProtectedRoute>} />
+        <Route path="/employee/change-password" element={<ProtectedRoute>  <ChangePassword />  </ProtectedRoute>} />
+
+        <Route path="/dashboard-selection" element={ <ProtectedRoute> <DashboardSelection /> </ProtectedRoute>} />
+        <Route path="/admin-panel" element={<ProtectedRoute> <AdminPanel /> </ProtectedRoute>} />
 
 
 

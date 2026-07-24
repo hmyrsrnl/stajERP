@@ -39,15 +39,6 @@ function LoginForm({ onSubmit, errorMessage, onNavigateRegister }) {
         Giriş Yap
       </Button>
 
-      <p style={{ marginTop: '15px', fontSize: '14px' }}>
-        Hesabınız yok mu?{' '}
-        <span 
-          onClick={onNavigateRegister} 
-          style={{ color: '#f472e9', cursor: 'pointer', textDecoration: 'underline' }}
-        >
-          Yeni Kayıt Oluştur
-        </span>
-      </p>
     </form>
   );
 }

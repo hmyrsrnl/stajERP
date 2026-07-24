@@ -56,7 +56,7 @@ function DashboardSelection() {
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '1000px', margin: '40px auto' }}>
       <Header
-        title="stajERP Kontrol Merkezi"
+        title="ERP Kontrol Merkezi"
         backgroundColor="#1e293b"
         backPath="/"
         backButtonText="Çıkış Yap"

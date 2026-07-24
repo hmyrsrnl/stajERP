@@ -7,12 +7,13 @@ function EmployeeForm({ onSaveSuccess }) {
   const [tcNo, setTcNo] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [gender, setGender] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [roleName, setRoleName] = useState('');
   const [maas, setMaas] = useState('');
-  const [systemRole, setSystemRole] = useState('calısan'); 
+  const [systemRole, setSystemRole] = useState('calısan');
   const [departmentId, setDepartmentId] = useState('');
 
   const [departments, setDepartments] = useState([]);
@@ -32,6 +33,7 @@ function EmployeeForm({ onSaveSuccess }) {
       tc_no: tcNo,
       first_name: firstName,
       last_name: lastName,
+      gender: gender,
       email,
       phone_number: phone,
       home_address: homeAddress,
@@ -47,6 +49,7 @@ function EmployeeForm({ onSaveSuccess }) {
         setTcNo('');
         setFirstName('');
         setLastName('');
+        setGender('');
         setEmail('');
         setPhone('');
         setHomeAddress('');
@@ -66,9 +69,9 @@ function EmployeeForm({ onSaveSuccess }) {
   return (
     <form onSubmit={handleSaveEmployee} style={{ background: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
       {message && (
-        <p style={{ 
-          fontWeight: 'bold', 
-          textAlign: 'left', 
+        <p style={{
+          fontWeight: 'bold',
+          textAlign: 'left',
           color: message.includes('hata') || message.includes('Hata') ? '#d32f2f' : '#2e7d32',
           marginBottom: '15px'
         }}>
@@ -79,6 +82,24 @@ function EmployeeForm({ onSaveSuccess }) {
       <FormField label="T.C. Kimlik No" value={tcNo} onChange={e => setTcNo(e.target.value)} placeholder="11 Haneli TC giriniz" required />
       <FormField label="Ad" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Çalışanın Adı" required />
       <FormField label="Soyad" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Çalışanın Soyadı" required />
+
+      <div style={{ marginBottom: '25px', textAlign: 'left' }}>
+        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px', color: '#333' }}>
+          Cinsiyet
+        </label>
+        <select
+          value={gender}
+          onChange={e => setGender(e.target.value)}
+          required
+          style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+        >
+          <option value="" disabled>-- Cinsiyet Seçiniz --</option>
+          <option value="Kadın">Kadın</option>
+          <option value="Erkek">Erkek</option>
+          <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
+        </select>
+      </div>
+
       <FormField label="Telefon" value={phone} onChange={e => setPhone(e.target.value)} placeholder="05xxxxxxxx" />
       <FormField label="E-posta" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="personel@firma.com" required />
       <FormField label="Ev Adresi" value={homeAddress} onChange={e => setHomeAddress(e.target.value)} placeholder="Açık Adres" />
@@ -88,7 +109,7 @@ function EmployeeForm({ onSaveSuccess }) {
       <div style={{ marginBottom: '15px', textAlign: 'left' }}>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px', color: '#333' }}>Bağlı Olacağı Departman</label>
         <select value={departmentId} onChange={e => setDepartmentId(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}>
-          <option value="">-- Departman Seçiniz --</option>
+          <option value="" disabled>-- Departman Seçiniz --</option>
           {departments.map(dept => (
             <option key={dept.id} value={dept.id}>{dept.department_name}</option>
           ))}
@@ -105,8 +126,8 @@ function EmployeeForm({ onSaveSuccess }) {
         </select>
       </div>
 
-      <div style={{textAlign: 'center'}}>     
-      <Button type="submit" style ={{background: '#f7a33c'}}>Personeli Kaydet</Button>
+      <div style={{ textAlign: 'center' }}>
+        <Button type="submit" style={{ background: '#f7a33c' }}>Personeli Kaydet</Button>
       </div>
     </form>
   );
