@@ -50,7 +50,6 @@ export default function LoginScreen({ navigation }) {
         <LoginForm 
           onSubmit={handleLogin}
           errorMessage={message}
-          onNavigateRegister={() => navigation.navigate('Register')}
         />
       </View>
     </ScrollView>

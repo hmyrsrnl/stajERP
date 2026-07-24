@@ -42,15 +42,6 @@ export default function LoginForm({ onSubmit, errorMessage, onNavigateRegister }
                 Giriş Yap
             </Button>
 
-            <Text style={styles.footerText}>
-                Hesabınız yok mu?{' '}
-                <Text
-                    onPress={onNavigateRegister}
-                    style={styles.registerLink}
-                >
-                    Yeni Kayıt Oluştur
-                </Text>
-            </Text>
         </View>
     );
 }

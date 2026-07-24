@@ -86,7 +86,7 @@ export default function DashboardSelectionScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Header
-        title="stajERP Kontrol Merkezi"
+        title="ERP Kontrol Merkezi"
         backgroundColor="#1e293b"
         backButtonText="Çıkış Yap"
         backPath="Login"

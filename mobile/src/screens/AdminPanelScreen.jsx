@@ -77,7 +77,6 @@ export default function AdminPanelScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Hızlı Geçiş Butonları */}
         <View style={styles.quickNavContainer}>
           <Text style={styles.quickNavTitle}>Hızlı Geçişler</Text>
 
