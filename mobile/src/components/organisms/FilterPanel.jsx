@@ -20,24 +20,24 @@ export default function FilterPanel({
   style
 }) {
   return (
-    <View style={[styles.panelContainer, style]}>
-      <Text style={[styles.panelTitle, { borderBottomColor: themeColor }]}>
+    <View style={[styles.container, style]}>
+      <Text style={[styles.title, { borderBottomColor: themeColor }]}>
         Filtreleme
       </Text>
 
-      <View style={styles.sectionGroup}>
+      <View style={styles.section}>
         <Text style={styles.label}>Personel Ara</Text>
         <TextInput
-          style={styles.searchInput}
           placeholder="İsim veya Soyisim ile ara..."
-          placeholderTextColor="#a0aec0"
+          placeholderTextColor="#999"
           value={searchTerm}
           onChangeText={(text) => onSearchChange && onSearchChange(text)}
+          style={styles.searchInput}
         />
       </View>
 
       {showGenders && (
-        <View style={styles.sectionGroup}>
+        <View style={styles.section}>
           <FilterGroup
             title="Cinsiyet"
             items={['Kadın', 'Erkek']}
@@ -48,7 +48,7 @@ export default function FilterPanel({
       )}
 
       {showDepartments && (
-        <View style={styles.sectionGroup}>
+        <View style={styles.section}>
           <Text style={styles.label}>Departmanlar</Text>
           <FilterGroup
             items={departments}
@@ -58,7 +58,7 @@ export default function FilterPanel({
         </View>
       )}
 
-      <View style={styles.sectionGroupLarge}>
+      <View style={styles.section}>
         <FilterGroup
           title="Çalışan Durumu"
           items={['Aktif', 'Pasif']}
@@ -81,35 +81,29 @@ export default function FilterPanel({
 }
 
 const styles = StyleSheet.create({
-  panelContainer: {
+  container: {
     width: '100%',
     backgroundColor: '#ffffff',
-    padding: 20,
+    padding: 16,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#dee2e6',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
-    shadowRadius: 4,
+    shadowRadius: 3,
     elevation: 2,
-    marginVertical: 10,
   },
-  panelTitle: {
-    marginTop: 0,
-    marginBottom: 15,
-    color: '#333333',
+  title: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#333333',
     borderBottomWidth: 2,
-    paddingBottom: 5,
-    textAlign: 'left',
+    paddingBottom: 6,
+    marginBottom: 16,
   },
-  sectionGroup: {
-    marginBottom: 20,
-  },
-  sectionGroupLarge: {
-    marginBottom: 25,
+  section: {
+    marginBottom: 18,
   },
   label: {
     fontWeight: 'bold',
@@ -124,21 +118,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     fontSize: 14,
-    color: '#2d3748',
+    color: '#333333',
     backgroundColor: '#ffffff',
-    width: '100%',
   },
   exportButton: {
     width: '100%',
-    paddingVertical: 12,
+    paddingVertical: 10,
     backgroundColor: '#1f804e',
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 3,
     elevation: 2,
   },
   exportButtonText: {
