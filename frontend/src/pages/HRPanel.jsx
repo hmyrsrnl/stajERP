@@ -10,25 +10,41 @@ import FilterPanel from '../components/organisms/FilterPanel';
 function HRPanel() {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenders, setSelectedGenders] = useState([]);
   const [selectedDepts, setSelectedDepts] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
 
-  const fetchEmployees = () => {
-    axios.get('http://localhost/stajERP/backend/employees.php')
-      .then(res => setEmployees(res.data))
-      .catch(err => console.error("Veri çekme hatası:", err));
-  };
-
   useEffect(() => {
-    fetchEmployees();
-  }, []);
+    const fetchEmployeesData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost/stajERP/backend/employees.php?search=${encodeURIComponent(searchTerm)}`
+        );
 
-  const departmentsList = employees 
-    ? [...new Set(employees.map(emp => emp.department_name).filter(Boolean))] 
-    : [];
+        if (Array.isArray(res.data)) {
+          setEmployees(res.data);
+        } else {
+          setEmployees([]);
+        }
+      } catch (err) {
+        console.error("Veri çekme hatası:", err);
+        setEmployees([]);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      fetchEmployeesData();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  const employeeList = Array.isArray(employees) ? employees : [];
+
+  const departmentsList = [
+    ...new Set(employeeList.map(emp => emp.department_name).filter(Boolean))
+  ];
 
   const handleGenderChange = (gender) => {
     selectedGenders.includes(gender)
@@ -48,14 +64,12 @@ function HRPanel() {
       : setSelectedStatus([...selectedStatus, status]);
   };
 
-  const filteredEmployees = employees.filter(emp => {
-    const fullName = `${emp.first_name || ''} ${emp.last_name || ''}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase());
+  const filteredEmployees = employeeList.filter(emp => {
     const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(emp.gender);
     const matchesDept = selectedDepts.length === 0 || selectedDepts.includes(emp.department_name);
     const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(emp.status);
 
-    return matchesSearch && matchesGender && matchesDept && matchesStatus;
+    return matchesGender && matchesDept && matchesStatus;
   });
 
   const handleExportToExcel = () => {
@@ -91,20 +105,20 @@ function HRPanel() {
 
       <Header title="İnsan Kaynakları Ana Sayfa" backgroundColor="#f7a33c">
         <div style={{ display: 'flex', gap: '10px' }}>
-          <Button 
+          <Button
             onClick={() => navigate('/hr/hr-requests')}
             style={{ padding: '8px 15px', background: '#f3a77b', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             Talepler
           </Button>
-          <Button 
+          <Button
             onClick={() => navigate('/hr/add-employee')}
             style={{ padding: '8px 15px', background: '#f4894c', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             Yeni Çalışan Ekleme
           </Button>
-          <Button 
-            onClick={() => { localStorage.clear(); navigate('/'); }}
+          <Button
+            onClick={() => { localStorage.clear(); sessionStorage.clear(); navigate('/'); }}
             style={{ padding: '8px 15px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             Çıkış
@@ -113,8 +127,8 @@ function HRPanel() {
       </Header>
 
       <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginTop: '20px' }}>
-        
-        <FilterPanel 
+
+        <FilterPanel
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           departments={departmentsList}
@@ -130,11 +144,11 @@ function HRPanel() {
 
         <div style={{ flex: 1, background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6', minHeight: '400px' }}>
           <h3 style={{ margin: '0 0 15px 0', color: '#333', textAlign: 'left' }}>Kayıtlı Çalışanlar</h3>
-          <EmployeeTable 
-            employees={filteredEmployees} 
-            allEmployeesLength={employees.length}
-            onSelectEmployee={(emp) => navigate(`/hr/employee/${emp.id}`)} 
-            onEditEmployee={(emp) => navigate(`/hr/employee/edit/${emp.id}`)} 
+          <EmployeeTable
+            employees={filteredEmployees}
+            allEmployeesLength={employeeList.length}
+            onSelectEmployee={(emp) => navigate(`/hr/employee/${emp.id}`)}
+            onEditEmployee={(emp) => navigate(`/hr/employee/edit/${emp.id}`)}
           />
         </div>
 

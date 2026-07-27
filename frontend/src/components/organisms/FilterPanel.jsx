@@ -3,7 +3,7 @@ import FilterGroup from '../molecules/FilterGroup';
 import Button from '../atoms/Button'; 
 
 function FilterPanel({
-    searchTerm,
+    searchTerm = '',
     onSearchChange,
     departments = [],
     selectedGenders = [],
@@ -40,12 +40,14 @@ function FilterPanel({
             </h3>
 
             <div style={{ marginBottom: '20px' }}>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px', color: '#333', fontSize: '14px' }}>Personel Ara</label>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px', color: '#333', fontSize: '14px' }}>
+                    Personel Ara
+                </label>
                 <input
                     type="text"
                     placeholder="İsim veya Soyisim ile ara..."
                     value={searchTerm}
-                    onChange={(e) => onSearchChange(e.target.value)}
+                    onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
                     style={{
                         padding: '8px 15px',
                         borderRadius: '20px',

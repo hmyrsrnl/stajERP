@@ -15,10 +15,31 @@ function InfirmaryPanel() {
   const [selectedStatus, setSelectedStatus] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost/stajERP/backend/employees.php')
-      .then(res => setEmployees(res.data))
-      .catch(err => console.error(err));
-  }, []);
+    const fetchEmployeesData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost/stajERP/backend/employees.php?search=${encodeURIComponent(searchTerm)}`
+        );
+
+        if (Array.isArray(res.data)) {
+          setEmployees(res.data);
+        } else {
+          setEmployees([]);
+        }
+      } catch (err) {
+        console.error("Revir verileri çekilirken hata:", err);
+        setEmployees([]);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      fetchEmployeesData();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  const employeeList = Array.isArray(employees) ? employees : [];
 
   const handleGenderChange = (gender) => {
     selectedGenders.includes(gender)
@@ -32,19 +53,14 @@ function InfirmaryPanel() {
       : setSelectedStatus([...selectedStatus, status]);
   };
 
-  const filteredEmployees = employees.filter(emp => {
-    const firstName = emp.first_name || emp.Ad || '';
-    const lastName = emp.last_name || emp.Soyad || '';
-    const fullName = `${firstName} ${lastName}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase());
-
+  const filteredEmployees = employeeList.filter(emp => {
     const currentGender = emp.gender || emp.Cinsiyet;
     const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(currentGender);
 
     const currentStatus = emp.status || emp.Status;
     const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(currentStatus);
 
-    return matchesSearch && matchesGender && matchesStatus;
+    return matchesGender && matchesStatus;
   });
 
   const handleExportToExcel = () => {
@@ -76,14 +92,16 @@ function InfirmaryPanel() {
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '75%', margin: '30px auto' }}>
 
       <Header title="Revir Yönetim Paneli" backgroundColor="#4db6ac">
-        <Button onClick={() => navigate('/infirmary/infirmary-requests')}
-          style={{ padding: '8px 15px', background: '#048d7d', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>
-          Talepler
-        </Button>
-        <Button onClick={() => { localStorage.clear(); navigate('/'); }}
-          style={{ padding: '8px 15px', background: '#048d7d', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>
-          Çıkış
-        </Button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <Button onClick={() => navigate('/infirmary/infirmary-requests')}
+            style={{ padding: '8px 15px', background: '#048d7d', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>
+            Talepler
+          </Button>
+          <Button onClick={() => { localStorage.clear(); sessionStorage.clear(); navigate('/'); }}
+            style={{ padding: '8px 15px', background: '#048d7d', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>
+            Çıkış
+          </Button>
+        </div>
       </Header>
 
       <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginTop: '20px' }}>
@@ -103,6 +121,7 @@ function InfirmaryPanel() {
         <div style={{ flex: 1, background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
           <EmployeeTable
             employees={filteredEmployees}
+            allEmployeesLength={employeeList.length}
             onSelectEmployee={(emp) => navigate(`/infirmary/employee/${emp.id || emp.ID}`)}
           />
         </div>

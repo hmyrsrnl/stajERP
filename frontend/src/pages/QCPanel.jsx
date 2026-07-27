@@ -14,10 +14,31 @@ function QCPanel() {
   const [selectedStatus, setSelectedStatus] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost/stajERP/backend/quality_control.php?action=get_welders')
-      .then(res => setWelders(res.data))
-      .catch(err => console.error("Kaynakçı listesi yüklenirken hata:", err));
-  }, []);
+    const fetchWeldersData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost/stajERP/backend/quality_control.php?action=get_welders&search=${encodeURIComponent(searchTerm)}`
+        );
+
+        if (Array.isArray(res.data)) {
+          setWelders(res.data);
+        } else {
+          setWelders([]);
+        }
+      } catch (err) {
+        console.error("Kaynakçı listesi yüklenirken hata:", err);
+        setWelders([]);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      fetchWeldersData();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  const welderList = Array.isArray(welders) ? welders : [];
 
   const handleStatusChange = (status) => {
     selectedStatus.includes(status)
@@ -25,16 +46,11 @@ function QCPanel() {
       : setSelectedStatus([...selectedStatus, status]);
   };
 
-  const filteredWelders = welders.filter(emp => {
-    const firstName = emp.first_name || emp.Ad || '';
-    const lastName = emp.last_name || emp.Soyad || '';
-    const fullName = `${firstName} ${lastName}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase());
-
+  const filteredWelders = welderList.filter(emp => {
     const currentStatus = emp.status || emp.Status;
     const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(currentStatus);
 
-    return matchesSearch && matchesStatus;
+    return matchesStatus;
   });
 
   const handleExportToExcel = () => {
@@ -66,8 +82,10 @@ function QCPanel() {
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '75%', margin: '30px auto' }}>
       
       <Header title="Kalite Kontrol Takip Paneli" backgroundColor="#e18ce7">
-        <button onClick={() => { localStorage.clear(); navigate('/'); }} 
-          style={{ padding: '8px 15px', background: '#76399c', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>
+        <button 
+          onClick={() => { localStorage.clear(); sessionStorage.clear(); navigate('/'); }} 
+          style={{ padding: '8px 15px', background: '#76399c', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
           Çıkış
         </button>
       </Header>
@@ -88,6 +106,7 @@ function QCPanel() {
         <div style={{ flex: 1, background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
           <EmployeeTable 
             employees={filteredWelders} 
+            allEmployeesLength={welderList.length}
             onSelectEmployee={(emp) => navigate(`/qc/employee/${emp.id || emp.ID}`)} 
           />
         </div>
