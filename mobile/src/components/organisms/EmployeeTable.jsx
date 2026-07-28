@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Pagination from '../molecules/Pagination';
 
 const departmentColors = {
@@ -27,7 +27,6 @@ export default function EmployeeTable({
 
   const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
 
-  
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(1);
@@ -66,26 +65,29 @@ export default function EmployeeTable({
                   </View>
                 </View>
 
-               
                 <View style={styles.actionGroup}>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => onSelectEmployee && onSelectEmployee(emp)}
-                    hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
+                  <Pressable
+                    style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+                    onPress={() => {
+                      if (onSelectEmployee) {
+                        onSelectEmployee(emp);
+                      }
+                    }}
+                    hitSlop={{ top: 15, bottom: 15, left: 10, right: 10 }}
                   >
                     <Text style={styles.detailText}>Detaylar</Text>
-                  </TouchableOpacity>
+                  </Pressable>
 
                   {onEditEmployee && (
-                    <TouchableOpacity
-                      activeOpacity={0.7}
+                    <Pressable
+                      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
                       onPress={() => onEditEmployee(emp)}
-                      hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
+                      hitSlop={{ top: 15, bottom: 15, left: 10, right: 10 }}
                     >
                       <Text style={[styles.editText, { color: colors.button }]}>
                         Güncelle
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   )}
                 </View>
 
@@ -170,9 +172,13 @@ const styles = StyleSheet.create({
     color: '#007bff',
     fontSize: 14,
     fontWeight: 'bold',
+    paddingVertical: 4,
+    paddingHorizontal: 4,
   },
   editText: {
     fontSize: 14,
     fontWeight: 'bold',
+    paddingVertical: 4,
+    paddingHorizontal: 4,
   },
 });

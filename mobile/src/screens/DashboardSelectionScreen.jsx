@@ -55,7 +55,7 @@ export default function DashboardSelectionScreen({ navigation }) {
       id: 'hr_panel',
       title: 'İnsan Kaynakları Paneli',
       description: 'Personel kayıtları, işe alım, maaş ve özlük işleri yönetimi.',
-      screenName: 'HrPanel',
+      screenName: 'HRPanel',
       allowedRoles: ['admin', 'ik']
     },
     {

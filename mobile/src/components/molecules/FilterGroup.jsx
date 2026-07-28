@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Checkbox from '../atoms/Checkbox';
+import Checkbox from '../atoms/CheckBox';
 
 export default function FilterGroup({ title, items = [], selectedItems = [], onItemChange, style }) {
   return (

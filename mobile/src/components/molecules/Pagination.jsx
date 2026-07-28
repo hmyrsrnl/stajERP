@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 0, 
   },
   activeNavButton: {
     backgroundColor: '#ffffff',
@@ -106,31 +107,36 @@ const styles = StyleSheet.create({
     color: '#a0aec0',
   },
   numberButton: {
-    width: 35,
-    height: 35,
-    borderRadius: 17.5, 
+    width: 36,
+    height: 36,
+    borderRadius: 18, 
     borderWidth: 1,
     borderColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 0, 
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    marginVertical: 0, 
   },
+  
   activeNumberButton: {
-    backgroundColor: '#00796b',
-    borderColor: '#00796b',
+    backgroundColor: '#b0faa8', 
+    borderColor: '#b0faa8',
   },
   inactiveNumberButton: {
     backgroundColor: '#ffffff',
+    borderColor: '#e2e8f0',
   },
   numberText: {
     fontSize: 14,
+    textAlign: 'center',
   },
   activeNumberText: {
-    color: '#ffffff',
+    color: '#ffffff', 
     fontWeight: 'bold',
   },
   inactiveNumberText: {
-    color: '#333333',
-    fontWeight: 'normal',
+    color: '#333333', 
+    fontWeight: '500',
   },
 });
