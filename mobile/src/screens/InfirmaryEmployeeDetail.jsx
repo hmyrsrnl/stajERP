@@ -120,20 +120,20 @@ export default function InfirmaryEmployeeDetailScreen({ route, navigation }) {
                   <Text style={styles.emptyText}>Kayıtlı muayene bulunmamaktadır.</Text>
                 ) : (
                   examinations.map((exam, index) => (
-                    <View key={exam.id || exam.ID || index} style={styles.itemRow}>
+                    <View key={exam.id} style={styles.itemRow}>
                       <View style={styles.itemHeader}>
                         <Text style={styles.itemTitle}>
-                          {exam.examination_type || exam.muayene_turu || 'Genel Muayene'}
+                          {exam.exam_type}
                         </Text>
                         <Text style={styles.itemDate}>
-                          {exam.created_at || exam.examination_date || exam.tarih || ''}
+                          {exam.exam_date}
                         </Text>
                       </View>
                       <Text style={styles.itemDetail}>
-                        <Text style={styles.boldText}>Şikayet/Teşhis:</Text> {exam.complaint || exam.diagnosis || exam.teshis || 'Belirtilmemiş'}
+                        <Text style={styles.boldText}>Şikayet/Teşhis:</Text> {exam.result}
                       </Text>
                       <Text style={styles.itemDetail}>
-                        <Text style={styles.boldText}>Tedavi/Not:</Text> {exam.treatment || exam.notes || 'Belirtilmemiş'}
+                        <Text style={styles.boldText}>Tedavi/Not:</Text> {exam.description}
                       </Text>
                     </View>
                   ))
@@ -162,8 +162,8 @@ export default function InfirmaryEmployeeDetailScreen({ route, navigation }) {
                   <Text style={styles.emptyText}>Kayıtlı sağlık sertifikası bulunmamaktadır.</Text>
                 ) : (
                   certificates.map((cert, index) => {
-                    const expiryDateStr = cert.expiry_date || cert.gecerlilik_tarihi;
-                    const dbStatus = cert.status || cert.durum || 'Aktif';
+                    const expiryDateStr = cert.expiry_date;
+                    const dbStatus = cert.status;
 
                     let isExpired = false;
                     if (expiryDateStr) {
@@ -181,7 +181,7 @@ export default function InfirmaryEmployeeDetailScreen({ route, navigation }) {
                       <View key={cert.id || cert.ID || index} style={styles.itemRow}>
                         <View style={styles.itemHeader}>
                           <Text style={styles.itemTitle}>
-                            {cert.certificate_name || cert.sertifika_adi || 'Sağlık Raporu'}
+                            {cert.certificate_name}
                           </Text>
                           
                           <Text style={[
@@ -195,7 +195,7 @@ export default function InfirmaryEmployeeDetailScreen({ route, navigation }) {
                           </Text>
                         </View>
                         <Text style={styles.itemDetail}>
-                          <Text style={styles.boldText}>Veriliş Tarihi:</Text> {cert.issue_date || cert.verilis_tarihi || '-'}
+                          <Text style={styles.boldText}>Veriliş Tarihi:</Text> {cert.issue_date}
                         </Text>
                         <Text style={styles.itemDetail}>
                           <Text style={styles.boldText}>Bitiş Tarihi:</Text> {expiryDateStr || '-'}

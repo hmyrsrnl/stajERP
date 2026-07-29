@@ -20,14 +20,14 @@ export default function HRAnalyticsScreen({ route, navigation }) {
     {
       name: 'Erkek',
       population: maleCount,
-      color: '#3182ce',
+      color: '#82b2df',
       legendFontColor: '#2d3748',
       legendFontSize: 13,
     },
     {
       name: 'Kadın',
       population: femaleCount,
-      color: '#ed64a6',
+      color: '#ef92bf',
       legendFontColor: '#2d3748',
       legendFontSize: 13,
     }

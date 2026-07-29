@@ -32,7 +32,7 @@ export default function AppNavigator() {
         <Stack.Screen name="EmployeeDetail" component={EmployeeDetailScreen} />
         <Stack.Screen name="HRAnalytics" component={HRAnalyticsScreen} />
         <Stack.Screen name="InfirmaryPanel" component={InfirmaryPanelScreen} />
-       {/*} <Stack.Screen name="InfirmaryAnalytics" component={InfirmaryAnalyticsScreen} /> */}
+        <Stack.Screen name="InfirmaryAnalytics" component={InfirmaryAnalyticsScreen} /> 
         <Stack.Screen name="InfirmaryEmployeeDetail" component={InfirmaryEmployeeDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
