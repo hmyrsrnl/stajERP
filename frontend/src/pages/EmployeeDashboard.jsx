@@ -53,7 +53,6 @@ function EmployeeDashboard() {
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '60%', margin: '20px auto' }}>
 
-      {/* Organism */}
       <Header
         title={`Hoş Geldiniz, ${employeeInfo.first_name} ${employeeInfo.last_name}`}
         backgroundColor="#2b5876"

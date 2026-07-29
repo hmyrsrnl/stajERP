@@ -32,7 +32,6 @@ import ChangePassword from './pages/ChangePassword';
 import DashboardSelection from './pages/DashboardSelection';
 import AdminPanel from './pages/AdminPanel';
 
-// Korumalı Rota Bileşeni
 import ProtectedRoute from './components/organisms/ProtectedRoute';
 
 function App() {
@@ -41,26 +40,26 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
 
-        <Route path="/hr-panel" element={<ProtectedRoute allowedRoles={['ik', 'IK', 'admin']}><HRPanel /></ProtectedRoute>} />
-        <Route path="/hr/add-employee" element={<ProtectedRoute allowedRoles={['ik', 'IK', 'admin']}><EmployeeAdd /></ProtectedRoute>} />
-        <Route path="/hr/employee/:id" element={<ProtectedRoute allowedRoles={['ik', 'IK', 'admin']}><EmployeeDetail /></ProtectedRoute>} />
-        <Route path="/hr/hr-requests" element={<ProtectedRoute allowedRoles={['ik', 'IK', 'admin']}><HRRequests /></ProtectedRoute>} />
-        <Route path="/hr/employee/edit/:id" element={<ProtectedRoute allowedRoles={['ik', 'IK', 'admin']}><EmployeeUpdate /></ProtectedRoute>} />
+        <Route path="/hr-panel" element={<ProtectedRoute allowedRoles={['ik', 'admin']}><HRPanel /></ProtectedRoute>} />
+        <Route path="/hr/add-employee" element={<ProtectedRoute allowedRoles={['ik', 'admin']}><EmployeeAdd /></ProtectedRoute>} />
+        <Route path="/hr/employee/:id" element={<ProtectedRoute allowedRoles={['ik','admin']}><EmployeeDetail /></ProtectedRoute>} />
+        <Route path="/hr/hr-requests" element={<ProtectedRoute allowedRoles={['ik','admin']}><HRRequests /></ProtectedRoute>} />
+        <Route path="/hr/employee/edit/:id" element={<ProtectedRoute allowedRoles={['ik','admin']}><EmployeeUpdate /></ProtectedRoute>} />
 
-        <Route path="/infirmary-panel" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><InfirmaryPanel /></ProtectedRoute>} />
-        <Route path="/infirmary/employee/:id" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><InfirmaryEmployeeDetail /></ProtectedRoute>} />
-        <Route path="/infirmary/employee/:id/add-examination" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><ExaminationAdd /></ProtectedRoute>} />
-        <Route path="/infirmary/employee/:id/history" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><ExaminationHistory /></ProtectedRoute>} />
-        <Route path="/infirmary/examination/edit/:examinationId" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><ExaminationEdit /></ProtectedRoute>} />
-        <Route path="/infirmary/employee/:id/health-certificates" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><HealthCertificatesList /></ProtectedRoute>} />
-        <Route path="/infirmary/employee/:id/health-certificates/add" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><HealthCertificateAdd /></ProtectedRoute>} />
-        <Route path="/infirmary/health-certificates/edit/:certificateId" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><HealthCertificateEdit /></ProtectedRoute>} />
-        <Route path="/infirmary/infirmary-requests" element={<ProtectedRoute allowedRoles={['revir', 'Revir', 'admin']}><InfirmaryRequests /></ProtectedRoute>} />
+        <Route path="/infirmary-panel" element={<ProtectedRoute allowedRoles={['revir','admin']}><InfirmaryPanel /></ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id" element={<ProtectedRoute allowedRoles={['revir',  'admin']}><InfirmaryEmployeeDetail /></ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/add-examination" element={<ProtectedRoute allowedRoles={['revir',  'admin']}><ExaminationAdd /></ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/history" element={<ProtectedRoute allowedRoles={['revir', 'admin']}><ExaminationHistory /></ProtectedRoute>} />
+        <Route path="/infirmary/examination/edit/:examinationId" element={<ProtectedRoute allowedRoles={['revir',  'admin']}><ExaminationEdit /></ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/health-certificates" element={<ProtectedRoute allowedRoles={['revir',  'admin']}><HealthCertificatesList /></ProtectedRoute>} />
+        <Route path="/infirmary/employee/:id/health-certificates/add" element={<ProtectedRoute allowedRoles={['revir',  'admin']}><HealthCertificateAdd /></ProtectedRoute>} />
+        <Route path="/infirmary/employee/:employeeId/health-certificates/edit/:certificateId" element={<ProtectedRoute allowedRoles={['revir', 'admin']}><HealthCertificateEdit /></ProtectedRoute>} />
+        <Route path="/infirmary/infirmary-requests" element={<ProtectedRoute allowedRoles={['revir', 'admin']}><InfirmaryRequests /></ProtectedRoute>} />
 
-        <Route path="/qc-panel" element={<ProtectedRoute allowedRoles={['kalite', 'Kalite', 'admin']}><QCPanel /></ProtectedRoute>} />
-        <Route path="/qc/employee/:id" element={<ProtectedRoute allowedRoles={['kalite', 'Kalite', 'admin']}><QCEmployeeDetail /></ProtectedRoute>} />
-        <Route path="/qc/employee/:id/add-certificate" element={<ProtectedRoute allowedRoles={['kalite', 'Kalite', 'admin']}><QCAddCertificate /></ProtectedRoute>} />
-        <Route path="/qc/edit-certificate/:certificateId" element={<ProtectedRoute allowedRoles={['kalite', 'Kalite', 'admin']}><QCEditCertificate /></ProtectedRoute>} />
+        <Route path="/qc-panel" element={<ProtectedRoute allowedRoles={['kk','admin']}><QCPanel /></ProtectedRoute>} />
+        <Route path="/qc/employee/:id" element={<ProtectedRoute allowedRoles={['kk', 'admin']}><QCEmployeeDetail /></ProtectedRoute>} />
+        <Route path="/qc/employee/:id/add-certificate" element={<ProtectedRoute allowedRoles={['kk',  'admin']}><QCAddCertificate /></ProtectedRoute>} />
+        <Route path="/qc/edit-certificate/:certificateId" element={<ProtectedRoute allowedRoles={['kk', 'admin']}><QCEditCertificate /></ProtectedRoute>} />
 
         <Route path="/employee-dashboard" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>} />
         <Route path="/employee/requests" element={<ProtectedRoute><EmployeeRequests /></ProtectedRoute>} />

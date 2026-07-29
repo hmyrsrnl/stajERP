@@ -56,6 +56,7 @@ if ($method === 'GET') {
                         c.Cinsiyet AS gender,
                         c.Unvan AS role_name,
                         c.TelNo AS phone_number,
+                        c.Maas AS salary,
                         c.Email AS email,
                         c.Adres AS home_address,
                         c.Status AS status,
@@ -87,6 +88,7 @@ if ($method === 'GET') {
                         c.Unvan AS role_name,
                         c.TelNo AS phone_number,
                         c.Email AS email,
+                        c.Maas AS salary,
                         c.Adres AS home_address,
                         c.Status AS status,
                         c.IsBaslangicTarihi AS hire_date,   
@@ -122,7 +124,7 @@ if ($method === 'POST') {
     $phone_number      = $data['phone_number'] ?? '';
     $home_address      = $data['home_address'] ?? '';
     $unvan             = $data['role_name'] ?? 'Personel';
-    $maas              = $data['maas'] ?? 17002.12;
+    $salary              = $data['salary'] ?? 17002.12;
     $departmanID       = $data['department_id'] ?? null;
     $system_role       = $data['system_role'] ?? 'calısan';
     $dogumTarihi       = $data['dogum_tarihi'] ?? '2000-01-01';
@@ -150,7 +152,7 @@ if ($method === 'POST') {
             $dogumTarihi,
             $isBaslangicTarihi,
             $unvan,
-            $maas,
+            $salary,
             $home_address,
             $phone_number,
             $email,

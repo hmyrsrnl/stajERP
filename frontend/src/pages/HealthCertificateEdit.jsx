@@ -32,7 +32,7 @@ function HealthCertificateEdit() {
       certificate_type_id: formData.certificateTypeId,
       issue_date: formData.issueDate,
       expiry_date: formData.expiryDate === '' ? null : formData.expiryDate,
-      description: formData.description
+      description: formData.level
     };
 
     axios.post(`http://localhost/stajERP/backend/health_certificates.php?action=update&certificate_id=${certificateId}`, data)
