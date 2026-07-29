@@ -10,7 +10,7 @@ export default function RequestTable({ requests = [], style }) {
       case 'Reddedildi':
         return { bg: '#ffebee', color: '#c62828' };
       default:
-        return { bg: '#fff9c4', text: '#f57f17' }; // Beklemede / Varsayılan
+        return { bg: '#fff9c4', text: '#f57f17' }; 
     }
   };
 

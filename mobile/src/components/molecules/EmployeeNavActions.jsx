@@ -24,13 +24,6 @@ export default function EmployeeNavActions({ onNavigate }) {
         Şifremi Değiştir
       </Button>
 
-      <Button
-        onPress={() => handleNavigate('DepartmentRequests')}
-        style={[styles.actionButton, { backgroundColor: '#5484a4' }]}
-        textStyle={styles.buttonText}
-      >
-        Departman Taleplerinde Bulun
-      </Button>
 
       <Button
         onPress={() => handleNavigate('PastExaminations')}

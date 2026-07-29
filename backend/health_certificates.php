@@ -45,6 +45,17 @@ if (($method === 'POST' && $action === 'delete') || $method === 'DELETE') {
 
 if ($method === 'GET' && $action === 'list' && $employee_id) {
     try {
+        $updateExpiredSql = "UPDATE CalisanSertifika cs
+                             JOIN SertifikaTur st ON cs.SertifikaTurID = st.ID
+                             JOIN SertifikaKategori sk ON st.SertifikaKategoriID = sk.ID
+                             SET cs.Durum = 'Pasif'
+                             WHERE cs.CalisanID = ? 
+                               AND sk.KategoriAdi LIKE '%Sağlık%' 
+                               AND cs.BitisTarihi < CURDATE() 
+                               AND cs.Durum != 'Pasif'";
+        $updateStmt = $pdo->prepare($updateExpiredSql);
+        $updateStmt->execute([$employee_id]);
+
         $sql = "SELECT 
                     cs.ID AS id,
                     st.SertifikaAdi AS certificate_name,
@@ -105,10 +116,14 @@ if ($method === 'POST' && $action === 'add') {
             exit;
         }
     }
+
+
+    $initialStatus = (strtotime($bitisTarihi) < strtotime(date("Y-m-d"))) ? 'Pasif' : 'Aktif';
+
     try {
-        $sql = "INSERT INTO CalisanSertifika (CalisanID, SertifikaTurID, VerilisTarihi, BitisTarihi, Seviye, Durum) VALUES (?, ?, ?, ?, ?, 'Aktif')";
+        $sql = "INSERT INTO CalisanSertifika (CalisanID, SertifikaTurID, VerilisTarihi, BitisTarihi, Seviye, Durum) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$calisanID, $sertifikaTurID, $verilisTarihi, $bitisTarihi, $seviye]);
+        $stmt->execute([$calisanID, $sertifikaTurID, $verilisTarihi, $bitisTarihi, $seviye, $initialStatus]);
 
         echo json_encode(["message" => "Sağlık sertifikası başarıyla eklendi."]);
     } catch (PDOException $e) {
@@ -119,7 +134,7 @@ if ($method === 'POST' && $action === 'add') {
 
 if ($method === 'GET' && $action === 'get_single' && $certificate_id) {
     try {
-        $sql = "SELECT ID AS id, CalisanID AS employee_id, SertifikaTurID AS certificate_type_id, VerilisTarihi AS issue_date, BitisTarihi AS expiry_date, Seviye AS level FROM CalisanSertifika WHERE ID = ?";
+        $sql = "SELECT ID AS id, CalisanID AS employee_id, SertifikaTurID AS certificate_type_id, VerilisTarihi AS issue_date, BitisTarihi AS expiry_date, Seviye AS level, Durum AS status FROM CalisanSertifika WHERE ID = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$certificate_id]);
         echo json_encode($stmt->fetch());
@@ -138,10 +153,13 @@ if ($method === 'POST' && $action === 'update' && $certificate_id) {
     $bitisTarihi = $data['expiry_date'] ?? null;
     $seviye = $data['level'] ?? null;
 
+   
+    $newStatus = ($bitisTarihi && strtotime($bitisTarihi) < strtotime(date("Y-m-d"))) ? 'Pasif' : 'Aktif';
+
     try {
-        $sql = "UPDATE CalisanSertifika SET SertifikaTurID = ?, VerilisTarihi = ?, BitisTarihi = ?, Seviye = ? WHERE ID = ?";
+        $sql = "UPDATE CalisanSertifika SET SertifikaTurID = ?, VerilisTarihi = ?, BitisTarihi = ?, Seviye = ?, Durum = ? WHERE ID = ?";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$sertifikaTurID, $verilisTarihi, $bitisTarihi, $seviye, $certificate_id]);
+        $stmt->execute([$sertifikaTurID, $verilisTarihi, $bitisTarihi, $seviye, $newStatus, $certificate_id]);
         echo json_encode(["message" => "Sağlık sertifikası başarıyla güncellendi."]);
     } catch (Exception $e) {
         http_response_code(400);

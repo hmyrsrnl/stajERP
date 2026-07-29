@@ -10,6 +10,9 @@ import AdminPanelScreen from '../screens/AdminPanelScreen';
 import HRPanelScreen from '../screens/HRPanelScreen';
 import EmployeeDetailScreen from '../screens/EmployeeDetailScreen';
 import HRAnalyticsScreen from '../screens/HRAnalyticsScreen';
+import InfirmaryPanelScreen from '../screens/InfirmaryPanelScreen';
+import InfirmaryAnalyticsScreen from '../screens/InfirmaryAnalyticsScreen'
+import InfirmaryEmployeeDetailScreen from '../screens/InfirmaryEmployeeDetail';
 
 const Stack = createStackNavigator();
 
@@ -28,7 +31,9 @@ export default function AppNavigator() {
         <Stack.Screen name="HRPanel" component={HRPanelScreen} />
         <Stack.Screen name="EmployeeDetail" component={EmployeeDetailScreen} />
         <Stack.Screen name="HRAnalytics" component={HRAnalyticsScreen} />
-        
+        <Stack.Screen name="InfirmaryPanel" component={InfirmaryPanelScreen} />
+       {/*} <Stack.Screen name="InfirmaryAnalytics" component={InfirmaryAnalyticsScreen} /> */}
+        <Stack.Screen name="InfirmaryEmployeeDetail" component={InfirmaryEmployeeDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

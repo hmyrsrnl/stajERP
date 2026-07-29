@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
   },
   
   activeNumberButton: {
-    backgroundColor: '#b0faa8', 
-    borderColor: '#b0faa8',
+    backgroundColor: '#007bff', 
+    borderColor: '#007bff',
   },
   inactiveNumberButton: {
     backgroundColor: '#ffffff',
