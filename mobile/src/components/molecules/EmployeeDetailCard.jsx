@@ -32,8 +32,13 @@ export default function EmployeeDetailCard({ employee, style }) {
       </View>
 
       <View style={styles.infoRow}>
-        <Text style={styles.label}>Görev / Departman:</Text>
-        <Text style={styles.value}>{employee.role_name || employee.department_name || 'Girilmedi'}</Text>
+        <Text style={styles.label}>Görev:</Text>
+        <Text style={styles.value}>{employee.role_name}</Text>
+      </View>
+
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Departman:</Text>
+        <Text style={styles.value}>{employee.department_name || 'Girilmedi'}</Text>
       </View>
 
       <View style={styles.infoRow}>

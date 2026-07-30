@@ -62,7 +62,7 @@ export default function DashboardSelectionScreen({ navigation }) {
       id: 'qc_panel',
       title: 'Kalite Kontrol Paneli',
       description: 'Kaynakçı sertifikasyonları, teknik belgeler ve kalite takibi.',
-      screenName: 'QcPanel',
+      screenName: 'QCPanel',
       allowedRoles: ['admin', 'kk']
     },
     {

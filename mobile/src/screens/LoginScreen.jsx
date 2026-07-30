@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoginForm from '../components/organisms/LoginForm'; 
+import LoginForm from '../components/organisms/LoginForm';
 import apiClient from '../api/client';
 
 export default function LoginScreen({ navigation }) {
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const clearOldSession = async () => {
+      try {
+        await AsyncStorage.removeItem('employee_id');
+        await AsyncStorage.removeItem('system_role');
+        await AsyncStorage.removeItem('userRole');
+        await AsyncStorage.removeItem('user');
+        console.log("Eski oturum bilgileri temizlendi.");
+      } catch (e) {
+        console.error("Oturum temizleme hatası:", e);
+      }
+    };
+
+    clearOldSession();
+  }, []);
 
   const handleLogin = async (loginData) => {
     setMessage('');
@@ -26,7 +42,12 @@ export default function LoginScreen({ navigation }) {
           [
             {
               text: "Tamam",
-              onPress: () => navigation.navigate('DashboardSelection') 
+              onPress: () => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'DashboardSelection' }],
+                });
+              }
             }
           ]
         );
@@ -47,7 +68,7 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.cardContainer}>
         <Text style={styles.title}>ERP GİRİŞ PANELİ</Text>
 
-        <LoginForm 
+        <LoginForm
           onSubmit={handleLogin}
           errorMessage={message}
         />
@@ -66,11 +87,11 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     width: '100%',
-    maxWidth: 400, 
-    padding: 30,    
-    borderWidth: 1, 
+    maxWidth: 400,
+    padding: 30,
+    borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8, 
+    borderRadius: 8,
     backgroundColor: '#ffffff',
     alignItems: 'center',
     shadowColor: '#000',
@@ -82,7 +103,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#f472e9', 
+    color: '#f472e9',
     marginBottom: 20,
     textAlign: 'center',
   },
