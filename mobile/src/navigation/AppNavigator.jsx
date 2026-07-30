@@ -13,6 +13,9 @@ import HRAnalyticsScreen from '../screens/HRAnalyticsScreen';
 import InfirmaryPanelScreen from '../screens/InfirmaryPanelScreen';
 import InfirmaryAnalyticsScreen from '../screens/InfirmaryAnalyticsScreen'
 import InfirmaryEmployeeDetailScreen from '../screens/InfirmaryEmployeeDetail';
+import QCPanelScreen from '../screens/QCPanelScreen'
+import QCAnalyticsScreen from '../screens/QCAnalyticsScreen';
+import QCEmployeeDetailScreen from '../screens/QCEmployeeDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +37,9 @@ export default function AppNavigator() {
         <Stack.Screen name="InfirmaryPanel" component={InfirmaryPanelScreen} />
         <Stack.Screen name="InfirmaryAnalytics" component={InfirmaryAnalyticsScreen} /> 
         <Stack.Screen name="InfirmaryEmployeeDetail" component={InfirmaryEmployeeDetailScreen} />
+        <Stack.Screen name="QCPanel" component={QCPanelScreen} />
+        <Stack.Screen name="QCEmployeeDetail" component={QCEmployeeDetailScreen} />
+        <Stack.Screen name="QCAnalytics" component={QCAnalyticsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -4,26 +4,37 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function QCDetailCard({ welder, style }) {
     if (!welder) return null;
 
+    const firstName = welder.first_name ;
+    const lastName = welder.last_name ;
+    const tcNo = welder.tc_no ;
+    const role = welder.role_name ;
+    const status = welder.status ;
+
     return (
-        <View style={[style.cardContainer, style]}>
+        <View style={[styles.cardContainer, style]}>
             <Text style={styles.infoRow}>
                 <Text style={styles.label}>Ad Soyad: </Text>
-                <Text style={styles.value}>{employee.first_name} {employee.last_name}</Text>
+                <Text style={styles.value}>{firstName} {lastName}</Text>
             </Text>
 
             <Text style={styles.infoRow}>
                 <Text style={styles.label}>T.C. No: </Text>
-                <Text style={styles.value}>{employee.tc_no}</Text>
+                <Text style={styles.value}>{tcNo}</Text>
             </Text>
 
             <Text style={styles.infoRow}>
                 <Text style={styles.label}>Görev: </Text>
-                <Text style={styles.value}>{employee.role_name}</Text>
+                <Text style={styles.value}>{role}</Text>
             </Text>
 
             <Text style={styles.infoRow}>
                 <Text style={styles.label}>Durum: </Text>
-                <Text style={styles.statusText}>{employee.status || 'Aktif'}</Text>
+                <Text style={[
+                    styles.statusText, 
+                    { color: status === 'Pasif' ? '#e53e3e' : '#2e7d32' }
+                ]}>
+                    {status}
+                </Text>
             </Text>
         </View>
     );
@@ -57,7 +68,6 @@ const styles = StyleSheet.create({
         color: '#475569',
     },
     statusText: {
-        color: 'green',
         fontWeight: 'bold',
     },
 });
