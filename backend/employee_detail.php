@@ -35,6 +35,7 @@ try {
                 c.Ad AS first_name,
                 c.Soyad AS last_name,
                 c.Cinsiyet AS gender,
+                c.DogumTarihi AS birth_date,
                 c.Unvan AS role_name,
                 c.TelNo AS phone_number,
                 c.Email AS email,
@@ -71,7 +72,8 @@ if ($method === 'POST') {
     $first_name   = $data['first_name'] ?? '';
     $last_name    = $data['last_name'] ?? '';
     $email        = $data['email'] ?? '';
-    $gender       = $data['gender'] ??'';
+    $gender       = $data['gender'] ?? '';
+    $birthday     = $data['birth_date'] ?? '';
     $phone_number = $data['phone_number'] ?? '';
     $home_address = $data['home_address'] ?? '';
     $role_name    = $data['role_name'] ?? '';
@@ -88,16 +90,27 @@ if ($method === 'POST') {
 
     try {
         $sql = "UPDATE Calisan SET 
-                    DepartmanID = ?, TCKimlikNo = ?, Ad = ?, Soyad = ?, Cinsiyet = ?,
+                    DepartmanID = ?, TCKimlikNo = ?, Ad = ?, Soyad = ?, Cinsiyet = ?, DogumTarihi = ?,
                     Unvan = ?, Maas = ?, Adres = ?, TelNo = ?, 
                     Email = ?, System_role = ?, Status = ?
                 WHERE ID = ?";
-        
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            $department_id, $tc_no, $first_name, $last_name, $gender,
-            $role_name, $maas, $home_address, $phone_number,
-            $email, $system_role, $status, $id
+            $department_id,
+            $tc_no,
+            $first_name,
+            $last_name,
+            $gender,
+            $birthday,
+            $role_name,
+            $maas,
+            $home_address,
+            $phone_number,
+            $email,
+            $system_role,
+            $status,
+            $id
         ]);
 
         echo json_encode(["message" => "Çalışan bilgileri başarıyla güncellendi."]);

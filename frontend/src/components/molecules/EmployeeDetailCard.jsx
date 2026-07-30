@@ -16,6 +16,7 @@ function EmployeeDetailCard({ employee }) {
       <p><strong>Cinsiyet:</strong> {employee.gender}</p>
       <p><strong>T.C. No:</strong> {employee.tc_no}</p>
       <p><strong>Görev:</strong> {employee.role_name}</p>
+      <p><strong>Doğum Tarihi:</strong>{employee.birth_date}</p>
       <p><strong>Durum:</strong> <span style={{ color: 'green', fontWeight: 'bold' }}>{employee.status || 'Aktif'}</span></p>
       
       <p><strong>Oluşturulma Tarihi:</strong> {formatDate(employee.created_at)}</p>

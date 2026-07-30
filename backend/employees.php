@@ -54,6 +54,7 @@ if ($method === 'GET') {
                         c.Ad AS first_name,
                         c.Soyad AS last_name,
                         c.Cinsiyet AS gender,
+                        c.DogumTarihi AS birth_date,
                         c.Unvan AS role_name,
                         c.TelNo AS phone_number,
                         c.Maas AS salary,
@@ -85,6 +86,7 @@ if ($method === 'GET') {
                         c.Ad AS first_name,
                         c.Soyad AS last_name,
                         c.Cinsiyet AS gender,
+                        c.DogumTarihi AS birth_date,
                         c.Unvan AS role_name,
                         c.TelNo AS phone_number,
                         c.Email AS email,
@@ -124,10 +126,10 @@ if ($method === 'POST') {
     $phone_number      = $data['phone_number'] ?? '';
     $home_address      = $data['home_address'] ?? '';
     $unvan             = $data['role_name'] ?? 'Personel';
-    $salary              = $data['salary'] ?? 17002.12;
+    $salary            = $data['salary'] ?? 17002.12;
     $departmanID       = $data['department_id'] ?? null;
     $system_role       = $data['system_role'] ?? 'calısan';
-    $dogumTarihi       = $data['dogum_tarihi'] ?? '2000-01-01';
+    $dogumTarihi       = $data['birth_date'] ?? '2000-01-01';
     $isBaslangicTarihi = date("Y-m-d");
 
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);

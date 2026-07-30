@@ -4,7 +4,7 @@ import Button from '../atoms/Button';
 
 function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
   const [formData, setFormData] = useState({
-    tc_no: '', first_name: '', last_name: '', gender: '', email: '',
+    tc_no: '', first_name: '', last_name: '', gender: '', birth_date: '', email: '',
     phone_number: '', home_address: '', role_name: '',
     maas: '', system_role: 'calısan', department_id: '', status: 'Aktif'
   });
@@ -28,12 +28,13 @@ function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
     <form onSubmit={handleFormSubmit} style={{ background: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
       <FormField label="T.C. Kimlik No" value={formData.tc_no} onChange={e => handleChange('tc_no', e.target.value)} />
       <FormField label="Ad" value={formData.first_name} onChange={e => handleChange('first_name', e.target.value)} />
+      <FormField label="Soyad" value={formData.last_name} onChange={e => handleChange('last_name', e.target.value)} />
 
       <div style={{ marginBottom: '25px', textAlign: 'left' }}>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px', color: '#333' }}>
           Cinsiyet
         </label>
-        <select value={formData.gender} onChange={e => handleChange ('gender', e.target.value)} required
+        <select value={formData.gender} onChange={e => handleChange('gender', e.target.value)} required
           style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
         >
           <option value="" disabled>-- Cinsiyet Seçiniz --</option>
@@ -43,7 +44,13 @@ function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
         </select>
       </div>
 
-      <FormField label="Soyad" value={formData.last_name} onChange={e => handleChange('last_name', e.target.value)} />
+      <FormField 
+        label="Doğum Tarihi" 
+        type="date" 
+        value={formData.birth_date || ''} 
+        onChange={e => handleChange('birth_date', e.target.value)} 
+      />
+
       <FormField label="Telefon" value={formData.phone_number} onChange={e => handleChange('phone_number', e.target.value)} />
       <FormField label="E-posta" value={formData.email} onChange={e => handleChange('email', e.target.value)} />
       <FormField label="Adres" value={formData.home_address} onChange={e => handleChange('home_address', e.target.value)} />

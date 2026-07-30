@@ -10,6 +10,7 @@ function EmployeeForm({ onSaveSuccess }) {
   const [gender, setGender] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [birthday, setBirtday] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [roleName, setRoleName] = useState('');
   const [maas, setMaas] = useState('');
@@ -35,6 +36,7 @@ function EmployeeForm({ onSaveSuccess }) {
       last_name: lastName,
       gender: gender,
       email,
+      birth_date: birthday, 
       phone_number: phone,
       home_address: homeAddress,
       role_name: roleName,
@@ -50,6 +52,7 @@ function EmployeeForm({ onSaveSuccess }) {
         setFirstName('');
         setLastName('');
         setGender('');
+        setBirtday('');
         setEmail('');
         setPhone('');
         setHomeAddress('');
@@ -99,6 +102,14 @@ function EmployeeForm({ onSaveSuccess }) {
           <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
         </select>
       </div>
+
+      <FormField 
+        label="Doğum Tarihi" 
+        type="date" 
+        value={birthday} 
+        onChange={e => setBirtday(e.target.value)} 
+        required
+      />
 
       <FormField label="Telefon" value={phone} onChange={e => setPhone(e.target.value)} placeholder="05xxxxxxxx" />
       <FormField label="E-posta" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="personel@firma.com" required />
