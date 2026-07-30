@@ -20,7 +20,7 @@ export default function Checkbox({ label, checked, onChange, onValueChange, styl
       style={[styles.container, style]}
     >
       <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked && <Text style={styles.checkmark}>✓</Text>}
+        {checked && <Text style={styles.checkmark}>+</Text>}
       </View>
 
       {label ? <Text style={styles.label}>{label}</Text> : null}

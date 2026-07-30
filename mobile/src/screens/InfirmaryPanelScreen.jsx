@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Alert
+  Alert,
+  RefreshControl,
+  SafeAreaView,
+  StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
 import Header from '../components/organisms/Header';
@@ -17,39 +20,50 @@ export default function InfirmaryPanelScreen({ navigation }) {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedGenders, setSelectedGenders] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    const fetchEmployeesData = async () => {
-      try {
+  const fetchEmployeesData = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
         setLoading(true);
-        const endpoint = searchTerm.trim() !== ''
-          ? `/employees.php?search=${encodeURIComponent(searchTerm.trim())}`
-          : '/employees.php';
-
-        const res = await apiClient.get(endpoint);
-
-        if (Array.isArray(res.data)) {
-          setEmployees(res.data);
-        } else {
-          setEmployees([]);
-        }
-      } catch (err) {
-        console.error("Mobil Revir Veri Çekme Hatası:", err);
-        setEmployees([]);
-      } finally {
-        setLoading(false);
       }
-    };
 
+      const endpoint = searchTerm.trim() !== ''
+        ? `/employees.php?search=${encodeURIComponent(searchTerm.trim())}`
+        : '/employees.php';
+
+      const res = await apiClient.get(endpoint);
+
+      if (Array.isArray(res.data)) {
+        setEmployees(res.data);
+      } else {
+        setEmployees([]);
+      }
+    } catch (err) {
+      console.error("Mobil Revir Veri Çekme Hatası:", err);
+      setEmployees([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchEmployeesData();
+      fetchEmployeesData(false);
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [fetchEmployeesData]);
+
+  const onRefresh = () => {
+    fetchEmployeesData(true);
+  };
 
   const employeeList = Array.isArray(employees) ? employees : [];
 
@@ -66,10 +80,10 @@ export default function InfirmaryPanelScreen({ navigation }) {
   };
 
   const filteredEmployees = employeeList.filter(emp => {
-    const currentGender = emp.gender || emp.Cinsiyet;
+    const currentGender = emp.gender;
     const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(currentGender);
 
-    const currentStatus = emp.status || emp.Status;
+    const currentStatus = emp.status;
     const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(currentStatus);
 
     return matchesGender && matchesStatus;
@@ -87,70 +101,85 @@ export default function InfirmaryPanelScreen({ navigation }) {
   };
 
   return (
-    <ScrollView 
-      style={styles.container} 
-      contentContainerStyle={styles.scrollContent}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Header title="Revir Yönetim Paneli" backgroundColor="#4db6ac" />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#4db6ac" />
 
-      <View style={styles.topActionBar}>
-        <TouchableOpacity
-          style={styles.analyticsBtn}
-          onPress={() => navigation.navigate('InfirmaryAnalytics', { employeesData: filteredEmployees })}
-        >
-          <Text style={styles.analyticsBtnText}> Revir Analitiği</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutBtnText}>Çıkış</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={styles.toggleFilterBtn}
-        onPress={() => setShowFilters(!showFilters)}
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#048d7d']}
+            tintColor="#048d7d"
+          />
+        }
       >
-        <Text style={styles.toggleFilterText}>
-          {showFilters ? "Filtreleri Gizle " : " Arama & Filtreleme Seçenekleri "}
-        </Text>
-      </TouchableOpacity>
+        <Header title="Revir Yönetim Paneli" backgroundColor="#4db6ac" />
+        <View style={styles.topActionBar}>
+          <TouchableOpacity
+            style={styles.analyticsBtn}
+            onPress={() => navigation.navigate('InfirmaryAnalytics', { employeesData: filteredEmployees })}
+          >
+            <Text style={styles.analyticsBtnText}> Revir Analitiği</Text>
+          </TouchableOpacity>
 
-      {showFilters && (
-        <FilterPanel
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          selectedGenders={selectedGenders}
-          onGenderChange={handleGenderChange}
-          selectedStatus={selectedStatus}
-          onStatusChange={handleStatusChange}
-          showDepartments={false}
-          themeColor="#048d7d"
-          style={{ marginBottom: 15 }}
-        />
-      )}
-
-      <View style={styles.tableCard}>
-        <View style={styles.tableHeaderRow}>
-          <Text style={styles.tableTitle}>Kayıtlı Çalışanlar</Text>
-          <Text style={styles.badgeText}>{filteredEmployees.length} Personel</Text>
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+            <Text style={styles.logoutBtnText}>Çıkış</Text>
+          </TouchableOpacity>
         </View>
 
-        {loading ? (
-          <ActivityIndicator size="large" color="#048d7d" style={{ marginVertical: 30 }} />
-        ) : (
-          <EmployeeTable
-            employees={filteredEmployees}
-            allEmployeesLength={employeeList.length}
-            onSelectEmployee={(emp) => navigation.navigate('InfirmaryEmployeeDetail', { id: emp.id || emp.ID })}
+        <TouchableOpacity
+          style={styles.toggleFilterBtn}
+          onPress={() => setShowFilters(!showFilters)}
+        >
+          <Text style={styles.toggleFilterText}>
+            {showFilters ? "Filtreleri Gizle " : " Arama & Filtreleme Seçenekleri "}
+          </Text>
+        </TouchableOpacity>
+
+        {showFilters && (
+          <FilterPanel
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            selectedGenders={selectedGenders}
+            onGenderChange={handleGenderChange}
+            selectedStatus={selectedStatus}
+            onStatusChange={handleStatusChange}
+            showDepartments={false}
+            themeColor="#048d7d"
+            style={{ marginBottom: 15 }}
           />
         )}
-      </View>
-    </ScrollView>
+
+        <View style={styles.tableCard}>
+          <View style={styles.tableHeaderRow}>
+            <Text style={styles.tableTitle}>Kayıtlı Çalışanlar</Text>
+            <Text style={styles.badgeText}>{filteredEmployees.length} Personel</Text>
+          </View>
+
+          {loading && !refreshing ? (
+            <ActivityIndicator size="large" color="#048d7d" style={{ marginVertical: 30 }} />
+          ) : (
+            <EmployeeTable
+              employees={filteredEmployees}
+              allEmployeesLength={employeeList.length}
+              onSelectEmployee={(emp) => navigation.navigate('InfirmaryEmployeeDetail', { id: emp.id })}
+            />
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#4db6ac',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
@@ -161,19 +190,19 @@ const styles = StyleSheet.create({
   },
   topActionBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifycontent: 'space-between',
     alignItems: 'center',
     marginVertical: 12,
     gap: 10,
   },
   analyticsBtn: {
     flex: 1,
-    backgroundColor: '#048d7d', 
+    backgroundColor: '#048d7d',
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderRadius: 20,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifycontent: 'center',
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -191,7 +220,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 20,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifycontent: 'center',
   },
   logoutBtnText: {
     color: '#ffffff',
@@ -227,7 +256,7 @@ const styles = StyleSheet.create({
   },
   tableHeaderRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifycontent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
     paddingBottom: 8,

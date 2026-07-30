@@ -1,16 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import Button from '../atoms/Button';
-import apiClient from '../../api/client';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function ExaminationTable({ 
   examinations = [], 
-  onEditClick, 
-  onDeleteSuccess, 
-  isReadOnly = false,
   style 
 }) {
-
   if (!examinations || examinations.length === 0) {
     return (
       <View style={[styles.emptyContainer, style]}>
@@ -21,40 +15,13 @@ export default function ExaminationTable({
     );
   }
 
-  const handleDeleteExamination = (exam) => {
-    Alert.alert(
-      "Muayene Sil",
-      `"${exam.exam_type} - ${exam.result}" muayene kaydını sistemden tamamen silmek istediğinize emin misiniz?`,
-      [
-        { text: "Vazgeç", style: "cancel" },
-        { 
-          text: "Sil", 
-          style: "destructive",
-          onPress: () => {
-            apiClient.post('/infirmary.php?action=delete', { id: exam.id })
-              .then(res => {
-                Alert.alert("Başarılı", res.data.message || "Muayene başarıyla silindi.");
-                if (onDeleteSuccess) {
-                  onDeleteSuccess(); 
-                }
-              })
-              .catch(err => {
-                console.error("Silme hatası:", err);
-                Alert.alert("Hata", err.response?.data?.error || "Muayene silinirken bir hata oluştu.");
-              });
-          }
-        }
-      ]
-    );
-  };
-
   return (
     <View style={[styles.container, style]}>
       {examinations.map((exam) => {
         const isPeriyodik = exam.exam_type === 'Periyodik';
 
         return (
-          <View key={exam.id} style={styles.card}>
+          <View key={exam.id || exam.ID} style={styles.card}>
             <View style={styles.headerRow}>
               <Text style={styles.dateText}>{exam.exam_date}</Text>
               
@@ -85,26 +52,6 @@ export default function ExaminationTable({
               <Text style={styles.doctorLabel}>Hekim: </Text>
               <Text style={styles.doctorName}>{exam.doctor_name || 'Bilinmeyen Hekim'}</Text>
             </View>
-
-            {!isReadOnly && (
-              <View style={styles.actionRow}>
-                <Button 
-                  onPress={() => onEditClick && onEditClick(exam.id)} 
-                  style={styles.editButton}
-                  textStyle={styles.buttonText}
-                >
-                  Düzenle
-                </Button>
-
-                <Button
-                  onPress={() => handleDeleteExamination(exam)} 
-                  style={styles.deleteButton}
-                  textStyle={styles.buttonText}
-                >
-                  Sil
-                </Button>
-              </View>
-            )}
           </View>
         );
       })}
@@ -119,27 +66,28 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   emptyContainer: {
-    padding: 30,
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
     color: '#777777',
     fontStyle: 'italic',
-    fontSize: 14,
+    fontSize: 13,
     textAlign: 'center',
   },
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 8,
-    padding: 15,
+    padding: 14,
     borderWidth: 1,
     borderColor: '#dee2e6',
     gap: 8,
+    elevation: 1,
   },
   headerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifycontent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
@@ -209,31 +157,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: 'italic',
     color: '#495057',
-  },
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-  },
-  editButton: {
-    backgroundColor: '#12a48c',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-  },
-  deleteButton: {
-    backgroundColor: '#d32f2f',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold',
   },
 });

@@ -122,17 +122,17 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   tooltipText: {
-    color: '#f47676',
+    color: '#615757',
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
   },
   expiredHighlight: {
-    color: '#da2111',
+    color: '#e65447',
     fontWeight: 'bold',
   },
   warningHighlight: {
-    color: '#ffd54f',
+    color: '#efeb65',
     fontWeight: 'bold',
   },
   closeHint: {

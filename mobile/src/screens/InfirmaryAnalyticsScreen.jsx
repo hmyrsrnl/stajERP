@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     Modal,
     FlatList,
-    ActivityIndicator
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import apiClient from '../api/client';
@@ -23,68 +24,74 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
     const [examinationsData, setExaminationsData] = useState([]);
     const [certificatesData, setCertificatesData] = useState([]);
     const [activeModal, setActiveModal] = useState(null);
+    const [refreshing, setRefreshing] = useState(false);
 
+    const fetchAllDataFromDB = useCallback(async () => {
+        if (!employeesData || employeesData.length === 0) {
+            setLoading(false);
+            setRefreshing(false);
+            return;
+        }
 
-    useEffect(() => {
-        const fetchAllDataFromDB = async () => {
-            if (!employeesData || employeesData.length === 0) {
-                setLoading(false);
-                return;
-            }
+        try {
+            const examPromises = employeesData.map(emp => {
+                const empId = emp.id || emp.ID;
+                return apiClient.get(`/infirmary.php?action=list&employee_id=${empId}`)
+                    .then(res => {
+                        const list = Array.isArray(res.data) ? res.data : [];
+                        return list.map(item => ({
+                            ...item,
+                            employee_name: `${emp.first_name || emp.Ad || ''} ${emp.last_name || emp.Soyad || ''}`.trim()
+                        }));
+                    })
+                    .catch(() => []);
+            });
 
-            try {
-                setLoading(true);
+            const certPromises = employeesData.map(emp => {
+                const empId = emp.id || emp.ID;
+                return apiClient.get(`/health_certificates.php?action=list&employee_id=${empId}`)
+                    .then(res => {
+                        const list = Array.isArray(res.data) ? res.data : [];
+                        return list.map(item => ({
+                            ...item,
+                            employee_name: `${emp.first_name || emp.Ad || ''} ${emp.last_name || emp.Soyad || ''}`.trim()
+                        }));
+                    })
+                    .catch(() => []);
+            });
 
-                const examPromises = employeesData.map(emp => {
-                    const empId = emp.id || emp.ID;
-                    return apiClient.get(`/infirmary.php?action=list&employee_id=${empId}`)
-                        .then(res => {
-                            const list = Array.isArray(res.data) ? res.data : [];
-                            return list.map(item => ({
-                                ...item,
-                                employee_name: `${emp.first_name || emp.Ad || ''} ${emp.last_name || emp.Soyad || ''}`.trim()
-                            }));
-                        })
-                        .catch(() => []);
-                });
+            const allExamsResults = await Promise.all(examPromises);
+            const allCertsResults = await Promise.all(certPromises);
 
-                const certPromises = employeesData.map(emp => {
-                    const empId = emp.id || emp.ID;
-                    return apiClient.get(`/health_certificates.php?action=list&employee_id=${empId}`)
-                        .then(res => {
-                            const list = Array.isArray(res.data) ? res.data : [];
-                            return list.map(item => ({
-                                ...item,
-                                employee_name: `${emp.first_name || emp.Ad || ''} ${emp.last_name || emp.Soyad || ''}`.trim()
-                            }));
-                        })
-                        .catch(() => []);
-                });
+            const combinedExams = allExamsResults.flat();
+            const combinedCerts = allCertsResults.flat();
 
-                const allExamsResults = await Promise.all(examPromises);
-                const allCertsResults = await Promise.all(certPromises);
+            setExaminationsData(combinedExams);
+            setCertificatesData(combinedCerts);
 
-                const combinedExams = allExamsResults.flat();
-                const combinedCerts = allCertsResults.flat();
-
-                setExaminationsData(combinedExams);
-                setCertificatesData(combinedCerts);
-
-            } catch (err) {
-                console.error("Analitik verileri veritabanından çekilemedi:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAllDataFromDB();
+        } catch (err) {
+            console.error("Analitik verileri veritabanından çekilemedi:", err);
+        } finally {
+            setLoading(false);
+            setRefreshing(false); 
+        }
     }, [employeesData]);
 
+    useEffect(() => {
+        setLoading(true);
+        fetchAllDataFromDB();
+    }, [fetchAllDataFromDB]);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchAllDataFromDB();
+    };
+
     const maleCount = employeesData.filter(e =>
-        (e.gender || e.Cinsiyet || '').toLowerCase().startsWith('e')
+        (e.gender).toLowerCase().startsWith('e')
     ).length;
     const femaleCount = employeesData.filter(e =>
-        (e.gender || e.Cinsiyet || '').toLowerCase().startsWith('k')
+        (e.gender).toLowerCase().startsWith('k')
     ).length;
 
     const genderData = [
@@ -111,10 +118,9 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
 
     const activeCertificatesCount = certificatesData.length - passiveCertificates.length;
 
-
     const diagnosisCounts = {};
     examinationsData.forEach(e => {
-        const diag = e.result || e.description || e.exam_type || 'Diğer / Belirtilmemiş';
+        const diag = e.result  || 'Diğer / Belirtilmemiş';
         diagnosisCounts[diag] = (diagnosisCounts[diag] || 0) + 1;
     });
     const sortedDiagnoses = Object.entries(diagnosisCounts)
@@ -132,7 +138,7 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
             const dayName = days[d.getDay()];
 
             const count = examinationsData.filter(e => {
-                const examDate = e.exam_date || e.MuayeneTarihi || '';
+                const examDate = e.exam_date || e.MuayeneTarihi || e.created_at || '';
                 return examDate.startsWith(dateStr);
             }).length;
 
@@ -149,7 +155,18 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
     const weeklyHeatmapData = getLast7DaysHeatmap();
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+        <ScrollView 
+            style={styles.container} 
+            contentContainerStyle={styles.scrollContent}
+            refreshControl={
+                <RefreshControl 
+                    refreshing={refreshing} 
+                    onRefresh={onRefresh} 
+                    colors={['#00796b']} 
+                    tintColor="#00796b"
+                />
+            }
+        >
             <Header
                 title="Revir Analitiği"
                 backgroundColor="#00796b"
@@ -157,10 +174,10 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
                 onBackPress={() => navigation.goBack()}
             />
 
-            {loading ? (
+            {loading && !refreshing ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#00796b" />
-                    <Text style={styles.loadingText}>Veritabanından veriler çekiliyor...</Text>
+                    <Text style={styles.loadingText}>Yükleniyor...</Text>
                 </View>
             ) : (
                 <>
@@ -381,77 +398,77 @@ const styles = StyleSheet.create({
         marginTop: 2
     },
     chartCard: {
-        backgroundColor: '#ffffff', 
-        borderRadius: 12, 
-        padding: 16, 
-        marginBottom: 16, 
-        borderWidth: 1, 
-        borderColor: '#e2e8f0', 
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
         elevation: 2
     },
-    chartTitle: { 
-        fontSize: 15, 
-        fontWeight: 'bold', 
-        color: '#2d3748' 
+    chartTitle: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: '#2d3748'
     },
-    chartSubTitle: { 
-        fontSize: 11, 
-        color: '#a0aec0', 
-        marginBottom: 12 
+    chartSubTitle: {
+        fontSize: 11,
+        color: '#a0aec0',
+        marginBottom: 12
     },
-    heatmapRow: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginVertical: 8 
+    heatmapRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginVertical: 8
     },
-    heatmapItem: { 
-        alignItems: 'center', 
-        gap: 4 
+    heatmapItem: {
+        alignItems: 'center',
+        gap: 4
     },
-    heatmapCountText: { 
-        fontSize: 10, 
-        fontWeight: 'bold', 
-        color: '#4a5568' 
+    heatmapCountText: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: '#4a5568'
     },
-    heatmapSquare: { 
-        width: 32, 
-        height: 32, 
-        borderRadius: 6 
+    heatmapSquare: {
+        width: 32,
+        height: 32,
+        borderRadius: 6
     },
-    heatmapDayText: { 
-        fontSize: 11, 
-        color: '#718096' 
+    heatmapDayText: {
+        fontSize: 11,
+        color: '#718096'
     },
-    diagRowHeader: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        marginBottom: 4 
+    diagRowHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 4
     },
-    diagName: { 
-        fontSize: 13, 
-        fontWeight: '600', 
-        color: '#2d3748' 
+    diagName: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#2d3748'
     },
-    diagCount: { 
-        fontSize: 12, 
-        fontWeight: 'bold', 
-        color: '#00796b' 
+    diagCount: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#00796b'
     },
-    diagBarBg: { 
-        height: 8, 
-        backgroundColor: '#edf2f7', 
-        borderRadius: 4, 
-        overflow: 'hidden' 
+    diagBarBg: {
+        height: 8,
+        backgroundColor: '#edf2f7',
+        borderRadius: 4,
+        overflow: 'hidden'
     },
-    diagBarFill: { 
-        height: '100%', 
-        backgroundColor: '#00796b', 
-        borderRadius: 4 
+    diagBarFill: {
+        height: '100%',
+        backgroundColor: '#00796b',
+        borderRadius: 4
     },
     emptyText: {
         fontSize: 12,
-        olor: '#a0aec0',
+        color: '#a0aec0',
         fontStyle: 'italic'
     },
     modalOverlay: {
