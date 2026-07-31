@@ -91,9 +91,9 @@ export default function HRPanelScreen({ navigation }) {
   };
 
   const filteredEmployees = employeeList.filter(emp => {
-    const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(emp.gender || emp.Cinsiyet);
+    const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(emp.gender);
     const matchesDept = selectedDepts.length === 0 || selectedDepts.includes(emp.department_name);
-    const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(emp.status || emp.Status);
+    const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(emp.status);
 
     return matchesGender && matchesDept && matchesStatus;
   });
@@ -171,7 +171,7 @@ export default function HRPanelScreen({ navigation }) {
         <View style={styles.tableCard}>
           <View style={styles.tableHeaderRow}>
             <Text style={styles.tableTitle}>Kayıtlı Çalışanlar</Text>
-            <Text style={styles.badgeText}>{filteredEmployees.length} Personel</Text>
+            <Text style={styles.badgeText}>{filteredEmployees.length  } Personel</Text>
           </View>
 
           {loading && !refreshing ? (

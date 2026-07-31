@@ -21,17 +21,22 @@ export default function EmployeeTable({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const filteredEmployees = employees.filter(emp => {
+    const role = String(emp.role_name ).toLowerCase();
+    return role !== 'admin';
+  });
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
+  const currentEmployees = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(1);
     }
-  }, [employees.length, totalPages, currentPage]);
+  }, [filteredEmployees.length, totalPages, currentPage]);
 
   return (
     <View style={[styles.container, style]}>

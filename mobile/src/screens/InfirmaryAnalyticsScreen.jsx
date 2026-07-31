@@ -41,7 +41,7 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
                         const list = Array.isArray(res.data) ? res.data : [];
                         return list.map(item => ({
                             ...item,
-                            employee_name: `${emp.first_name || emp.Ad || ''} ${emp.last_name || emp.Soyad || ''}`.trim()
+                            employee_name: `${emp.first_name} ${emp.last_name }`.trim()
                         }));
                     })
                     .catch(() => []);
@@ -54,7 +54,7 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
                         const list = Array.isArray(res.data) ? res.data : [];
                         return list.map(item => ({
                             ...item,
-                            employee_name: `${emp.first_name || emp.Ad || ''} ${emp.last_name || emp.Soyad || ''}`.trim()
+                            employee_name: `${emp.first_name } ${emp.last_name }`.trim()
                         }));
                     })
                     .catch(() => []);

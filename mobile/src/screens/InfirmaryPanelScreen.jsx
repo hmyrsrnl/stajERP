@@ -256,8 +256,9 @@ const styles = StyleSheet.create({
   },
   tableHeaderRow: {
     flexDirection: 'row',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    width: '100%',
     marginBottom: 12,
     paddingBottom: 8,
     borderBottomWidth: 1,

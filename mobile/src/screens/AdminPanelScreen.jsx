@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
-  Platform 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Platform
 } from 'react-native';
 import Header from '../components/organisms/Header';
 import apiClient from '../api/client';
@@ -67,15 +67,6 @@ export default function AdminPanelScreen({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.logCard}>
-          <Text style={styles.sectionTitle}>Sistem Durumu ve Log Özetleri</Text>
-          <View style={styles.monoContainer}>
-            <Text style={styles.monoText}>[OK] MySQL Veritabanı bağlantısı başarılı. (StajERP)</Text>
-            <Text style={styles.monoText}>[OK] CORS Güvenlik katmanı aktif.</Text>
-            <Text style={styles.monoText}>[INFO] Rol tabanlı erişim kontrolü (RBAC) devrede.</Text>
-            <Text style={styles.monoText}>[INFO] Şifreleme algoritması aktif: Bcrypt</Text>
-          </View>
-        </View>
 
         <View style={styles.quickNavContainer}>
           <Text style={styles.quickNavTitle}>Hızlı Geçişler</Text>
@@ -99,9 +90,9 @@ export default function AdminPanelScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.navButton}
-            onPress={() => navigation.navigate('EmployeeDashboard')}
+            onPress={() => navigation.navigate('InfirmaryPanel')}
           >
-            <Text style={styles.navButtonText}>Kendi Çalışan Profilime Git</Text>
+            <Text style={styles.navButtonText}>Revir Paneline Git</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -127,7 +118,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   statCard: {
-    width: '48%', 
+    width: '48%',
     paddingVertical: 18,
     paddingHorizontal: 12,
     borderRadius: 8,
@@ -151,26 +142,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
-  logCard: {
-    backgroundColor: '#ffffff',
-    padding: 18,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    borderBottomWidth: 2,
-    borderBottomColor: '#0f172a',
-    paddingBottom: 8,
-    marginBottom: 12,
-  },
-  monoContainer: {
-    gap: 6,
-  },
+
   monoText: {
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     fontSize: 12,
