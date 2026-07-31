@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "ERP",
+    "slug": "ERP",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/indir.jpeg",

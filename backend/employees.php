@@ -126,7 +126,7 @@ if ($method === 'POST') {
     $phone_number      = $data['phone_number'] ?? '';
     $home_address      = $data['home_address'] ?? '';
     $unvan             = $data['role_name'] ?? 'Personel';
-    $salary            = $data['salary'] ?? 17002.12;
+    $salary            = $data['salary'] ?? 17002;
     $departmanID       = $data['department_id'] ?? null;
     $system_role       = $data['system_role'] ?? 'calısan';
     $dogumTarihi       = $data['birth_date'] ?? '2000-01-01';

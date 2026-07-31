@@ -30,7 +30,7 @@ if ($method === 'POST') {
     $isBaslangicTarihi = date("Y-m-d"); 
     $departmanID       = null; 
     $unvan             = 'Yeni Personel';
-    $maas              = 17002.12; 
+    $maas              = 17002; 
 
     
 

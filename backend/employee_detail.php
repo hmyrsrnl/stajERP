@@ -77,7 +77,7 @@ if ($method === 'POST') {
     $phone_number = $data['phone_number'] ?? '';
     $home_address = $data['home_address'] ?? '';
     $role_name    = $data['role_name'] ?? '';
-    $maas         = $data['maas'] ?? 17002.12;
+    $maas         = $data['maas'] ?? 17002;
     $system_role  = $data['system_role'] ?? 'calısan';
     $department_id = $data['department_id'] ?? null;
     $status       = $data['status'] ?? 'Aktif';
