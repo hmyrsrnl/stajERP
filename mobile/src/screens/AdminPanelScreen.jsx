@@ -142,14 +142,6 @@ export default function AdminPanelScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#b22a2a" />
-
-      <Header
-        title="Sistem Yönetim Merkezi"
-        backgroundColor="#b22a2a"
-        backPath="DashboardSelection"
-        backButtonText="Kontrol Merkezi"
-      />
 
       <ScrollView
         style={styles.container}
@@ -158,6 +150,12 @@ export default function AdminPanelScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#b22a2a']} tintColor="#b22a2a" />
         }
       >
+        <Header
+          title="Sistem Yönetim Merkezi"
+          backgroundColor="#b22a2a"
+          backPath="DashboardSelection"
+          backButtonText="Kontrol Merkezi"
+        />
         {loading && !refreshing ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#b22a2a" />
@@ -361,37 +359,37 @@ export default function AdminPanelScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { 
-    flex: 1, 
-    backgroundColor: '#b22a2a' 
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#b22a2a'
   },
-  container: { 
-    flex: 1, 
-    backgroundColor: '#f8fafc' 
+  container: {
+    flex: 1,
+    backgroundColor: '#f8fafc'
   },
-  scrollContainer: { 
-    flexGrow: 1, 
-    paddingBottom: 50 
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 50
   },
-  loadingContainer: { 
-    paddingVertical: 80, 
-    alignItems: 'center' 
+  loadingContainer: {
+    paddingVertical: 80,
+    alignItems: 'center'
   },
-  loadingText: { 
-    marginTop: 12, 
-    color: '#b22a2a', 
-    fontSize: 14, 
-    fontWeight: '500' 
+  loadingText: {
+    marginTop: 12,
+    color: '#b22a2a',
+    fontSize: 14,
+    fontWeight: '500'
   },
-  contentPadding: { 
-    paddingHorizontal: 16, 
-    paddingTop: 15 
+  contentPadding: {
+    paddingHorizontal: 16,
+    paddingTop: 15
   },
-  sectionTitle: { 
-    fontSize: 16, 
-    fontWeight: 'bold', 
-    color: '#1e293b', 
-    marginBottom: 10 
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 10
   },
   statsGrid: {
     flexDirection: 'row',
@@ -413,16 +411,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
   },
-  statValue: { 
-    fontSize: 17, 
-    fontWeight: 'bold', 
-    color: '#0f172a' 
+  statValue: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#0f172a'
   },
-  statLabel: { 
-    fontSize: 11, 
-    color: '#64748b', 
-    fontWeight: '500', 
-    marginTop: 2 
+  statLabel: {
+    fontSize: 11,
+    color: '#64748b',
+    fontWeight: '500',
+    marginTop: 2
   },
   chartCard: {
     backgroundColor: '#ffffff',
@@ -439,10 +437,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  chartTitle: { 
-    fontSize: 15, 
-    fontWeight: 'bold', 
-    color: '#0f172a' 
+  chartTitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#0f172a'
   },
   badgeText: {
     fontSize: 11,
@@ -453,16 +451,16 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 8,
   },
-  chartStyle: { 
-    borderRadius: 8, 
-    marginTop: 4, 
-    alignSelf: 'center' 
+  chartStyle: {
+    borderRadius: 8,
+    marginTop: 4,
+    alignSelf: 'center'
   },
-  emptyText: { 
-    textAlign: 'center', 
-    color: '#94a3b8', 
-    paddingVertical: 12, 
-    fontSize: 12 
+  emptyText: {
+    textAlign: 'center',
+    color: '#94a3b8',
+    paddingVertical: 12,
+    fontSize: 12
   },
   accordionContainer: {
     marginTop: 12,
@@ -471,11 +469,11 @@ const styles = StyleSheet.create({
     borderTopColor: '#f1f5f9',
     gap: 8,
   },
-  accordionTitle: { 
-    fontSize: 13, 
-    fontWeight: 'bold', 
-    color: '#334155', 
-    marginBottom: 4 
+  accordionTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#334155',
+    marginBottom: 4
   },
   riskItemCard: {
     backgroundColor: '#f8fafc',
@@ -486,73 +484,74 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
     gap: 2,
   },
-  riskHeader: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center' 
-  },
-  riskEmpName: { 
-    fontSize: 13, 
-    fontWeight: 'bold', 
-    color: '#1e293b' 
-  },
-  riskBadge: { 
-    fontSize: 10, 
-    fontWeight: 'bold', 
-    paddingHorizontal: 6, 
-    paddingVertical: 2, 
-    borderRadius: 6 
-  },
-  riskCertName: { 
-    fontSize: 12, 
-    color: '#475569' 
-  },
-  riskDate: { 
-    fontSize: 11, 
-    color: '#64748b', 
-    marginTop: 2 
-  },
-  roleListContainer: { 
-    gap: 12, 
-    marginTop: 4 
-  },
-  roleRow: { 
-    width: '100%' 
-  },
-  roleHeader: { 
-    flexDirection: 'row', 
+  riskHeader: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4 },
-  roleName: { 
-    fontSize: 13, 
-    fontWeight: '600', 
-    color: '#334155' 
+    alignItems: 'center'
   },
-  roleCount: { 
-    fontSize: 12, 
-    fontWeight: 'bold', 
-    color: '#b22a2a' 
+  riskEmpName: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#1e293b'
   },
-  progressBg: { 
-    height: 8, 
-    backgroundColor: '#f1f5f9', 
-    borderRadius: 4, 
-    overflow: 'hidden' 
+  riskBadge: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6
   },
-  progressFill: { 
-    height: '100%', 
-    backgroundColor: '#b22a2a', 
-    borderRadius: 4 
+  riskCertName: {
+    fontSize: 12,
+    color: '#475569'
   },
-  quickNavContainer: { 
-    gap: 10, 
-    marginTop: 10 
+  riskDate: {
+    fontSize: 11,
+    color: '#64748b',
+    marginTop: 2
   },
-  quickNavTitle: { 
-    fontSize: 16, 
-    fontWeight: 'bold', 
-    color: '#0f172a', 
-    marginBottom: 4 
+  roleListContainer: {
+    gap: 12,
+    marginTop: 4
+  },
+  roleRow: {
+    width: '100%'
+  },
+  roleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4
+  },
+  roleName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#334155'
+  },
+  roleCount: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#b22a2a'
+  },
+  progressBg: {
+    height: 8,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 4,
+    overflow: 'hidden'
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#b22a2a',
+    borderRadius: 4
+  },
+  quickNavContainer: {
+    gap: 10,
+    marginTop: 10
+  },
+  quickNavTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#0f172a',
+    marginBottom: 4
   },
   navButton: {
     backgroundColor: '#b22a2a',
@@ -561,8 +560,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  navButtonText: { 
-    color: '#ffffff', 
+  navButtonText: {
+    color: '#ffffff',
     fontWeight: 'bold',
-    fontSize: 14 },
+    fontSize: 14
+  },
 });

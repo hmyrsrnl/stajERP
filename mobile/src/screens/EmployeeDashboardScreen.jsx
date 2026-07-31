@@ -228,7 +228,6 @@ export default function EmployeeDashboardScreen({ navigation }) {
       <View style={styles.mainContent}>
         <ProfileInfoCard employeeInfo={employeeInfo} />
 
-        {/* MUAYENE ÖZETİ */}
         <View style={styles.cardWrapper}>
           <View style={styles.cardHeaderRow}>
             <Text style={styles.cardTitle}>Muayene Özetim</Text>
