@@ -138,7 +138,7 @@ export default function InfirmaryAnalyticsScreen({ route, navigation }) {
             const dayName = days[d.getDay()];
 
             const count = examinationsData.filter(e => {
-                const examDate = e.exam_date || e.MuayeneTarihi || e.created_at || '';
+                const examDate = e.exam_date;
                 return examDate.startsWith(dateStr);
             }).length;
 

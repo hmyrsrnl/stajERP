@@ -53,7 +53,7 @@ export default function EmployeeDashboardScreen({ navigation }) {
           empData.role_name 
         ).toLowerCase();
 
-        const welderCheck = unvanText.includes('Kaynakçı');
+        const welderCheck = unvanText.includes('kaynakçı');
         setIsWelder(welderCheck);
       }
 
@@ -303,14 +303,14 @@ export default function EmployeeDashboardScreen({ navigation }) {
 
                   return (
                     <View 
-                      key={cert.id || cert.ID || index} 
+                      key={cert.id} 
                       style={[
                         styles.certItemCard, 
                         { borderLeftColor: isCertInactive ? '#e53e3e' : '#38a169' }
                       ]}
                     >
                       <View style={styles.certHeaderRow}>
-                        <Text style={styles.certName}>{cert.certificate_name || cert.title || 'Sağlık Sertifikası'}</Text>
+                        <Text style={styles.certName}>{cert.certificate_name || 'Sağlık Sertifikası'}</Text>
                         <View style={[
                           styles.certStatusBadge, 
                           { backgroundColor: isCertInactive ? '#fff5f5' : '#e6fffa' }
@@ -346,7 +346,7 @@ export default function EmployeeDashboardScreen({ navigation }) {
               onPress={() => setShowWelderCerts(!showWelderCerts)}
             >
               <Text style={styles.cardTitle}>
-                Kaynakçı Sertifikalarım {showWelderCerts ? '▲' : '▼'}
+                Kaynakçı Sertifikalarım {showWelderCerts ? '-' : '+'}
               </Text>
               <Text style={[styles.badgeTotal, { color: '#76399c', backgroundColor: '#f3e8ff' }]}>
                 {welderCertificates.length} Sertifika
@@ -386,7 +386,7 @@ export default function EmployeeDashboardScreen({ navigation }) {
 
                     return (
                       <View 
-                        key={cert.id || cert.ID || index} 
+                        key={cert.id} 
                         style={[
                           styles.certItemCard, 
                           { borderLeftColor: isCertInactive ? '#e53e3e' : '#38a169' }

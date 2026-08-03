@@ -17,10 +17,20 @@ import apiClient from '../api/client';
 
 const screenWidth = Dimensions.get('window').width - 32;
 
+const ROLE_NAMES = {
+  admin: 'Sistem Yöneticisi',
+  ik: 'İnsan Kaynakları',
+  revir: 'Sağlık / Revir',
+  kk: 'Kalite Kontrol',
+  calısan: 'Saha / Personel',
+  calisan: 'Saha / Personel',
+};
+
 export default function AdminPanelScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showRiskCertList, setShowRiskCertList] = useState(false);
+  const [selectedCertTab, setSelectedCertTab] = useState('ALL');
 
   const [kpiStats, setKpiStats] = useState({
     activeEmployees: 0,
@@ -140,8 +150,20 @@ export default function AdminPanelScreen({ navigation }) {
   const totalPersonnel = kpiStats.activeEmployees + kpiStats.passiveEmployees;
   const maxDeptCount = Math.max(...(deptChartData.datasets[0]?.data || [1]), 1);
 
+  const filteredRiskCertList = riskCertList.filter(item => {
+    const category = (item.category_name || item.certificate_name || '').toLowerCase();
+    if (selectedCertTab === 'SAGLIK') {
+      return category.includes('sağlık') || category.includes('rapor') || category.includes('hekim');
+    }
+    if (selectedCertTab === 'KALITE') {
+      return !category.includes('sağlık') && !category.includes('rapor') && !category.includes('hekim');
+    }
+    return true;
+  });
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#b22a2a" />
 
       <ScrollView
         style={styles.container}
@@ -150,147 +172,63 @@ export default function AdminPanelScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#b22a2a']} tintColor="#b22a2a" />
         }
       >
-        <Header
-          title="Sistem Yönetim Merkezi"
-          backgroundColor="#b22a2a"
-          backPath="DashboardSelection"
-          backButtonText="Kontrol Merkezi"
-        />
-        {loading && !refreshing ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#b22a2a" />
-            <Text style={styles.loadingText}>Yönetici Konsolu Yükleniyor...</Text>
-          </View>
-        ) : (
-          <View style={styles.contentPadding}>
+        <View style={styles.contentPadding}>
 
-            <Text style={styles.sectionTitle}>Şirket Genel Sağlık Karnesi</Text>
-            <View style={styles.statsGrid}>
-              <View style={[styles.statCard, { borderLeftColor: '#3b82f6' }]}>
-                <Text style={styles.statValue}>{kpiStats.activeEmployees} / {kpiStats.passiveEmployees}</Text>
-                <Text style={styles.statLabel}>Aktif / Pasif Personel</Text>
-              </View>
+          {/* 🎯 İK Ekranı ile %100 Birebir Aynı Hizalamadaki Header */}
+          <Header
+            title="Sistem Yönetim Merkezi"
+            backgroundColor="#b22a2a"
+            backPath="DashboardSelection"
+            backButtonText="Kontrol Merkezi"
+          />
 
-              <View style={[styles.statCard, { borderLeftColor: '#10b981' }]}>
-                <Text style={styles.statValue}>{kpiStats.monthlyExamsCount}</Text>
-                <Text style={styles.statLabel}>Bu Ayki Muayene</Text>
-              </View>
-
-              <View style={[styles.statCard, { borderLeftColor: '#ef4444' }]}>
-                <Text style={[styles.statValue, { color: '#dc2626' }]}>{kpiStats.riskCertificatesCount}</Text>
-                <Text style={styles.statLabel}>Riskli Sertifikalar</Text>
-              </View>
-
-              <View style={[styles.statCard, { borderLeftColor: '#8b5cf6' }]}>
-                <Text style={[styles.statValue, { fontSize: 13 }]}>
-                  ₺{Number(kpiStats.totalSalaryBudget).toLocaleString('tr-TR')}
-                </Text>
-                <Text style={styles.statLabel}>Aylık Maaş Yükü</Text>
-              </View>
+          {loading && !refreshing ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#b22a2a" />
+              <Text style={styles.loadingText}>Yönetici Konsolu Yükleniyor...</Text>
             </View>
+          ) : (
+            <View style={{ marginTop: 15 }}>
 
-            <View style={styles.chartCard}>
-              <TouchableOpacity
-                style={styles.cardHeaderTouchable}
-                activeOpacity={0.7}
-                onPress={() => setShowRiskCertList(!showRiskCertList)}
-              >
-                <Text style={styles.chartTitle}>Sertifika Risk & Uyum Durumu {showRiskCertList ? '-' : '+'}</Text>
-                <Text style={styles.badgeText}>{kpiStats.riskCertificatesCount} Riskli</Text>
-              </TouchableOpacity>
-
-              <PieChart
-                data={certRiskData}
-                width={screenWidth - 20}
-                height={160}
-                chartConfig={{ color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})` }}
-                accessor={"population"}
-                backgroundColor={"transparent"}
-                paddingLeft={"10"}
-                center={[0, 0]}
-                hasLegend={true}
-              />
-
-              {showRiskCertList && (
-                <View style={styles.accordionContainer}>
-                  <Text style={styles.accordionTitle}>Aksiyon Gerektiren Sertifikalar:</Text>
-                  {riskCertList.length === 0 ? (
-                    <Text style={styles.emptyText}>Kritik veya süresi dolmuş sertifika bulunmuyor.</Text>
-                  ) : (
-                    riskCertList.map((item, idx) => {
-                      const today = new Date();
-                      const expDate = item.expiry_date ? new Date(item.expiry_date) : null;
-                      const isExpired = expDate && expDate < today;
-
-                      return (
-                        <View key={idx} style={[styles.riskItemCard, { borderLeftColor: isExpired ? '#e53e3e' : '#f59f00' }]}>
-                          <View style={styles.riskHeader}>
-                            <Text style={styles.riskEmpName}>{item.employee_name}</Text>
-                            <Text style={[styles.riskBadge, { backgroundColor: isExpired ? '#fff5f5' : '#fff9db', color: isExpired ? '#e53e3e' : '#f59f00' }]}>
-                              {isExpired ? 'Süresi Dolmuş' : 'Bitişi Yakın'}
-                            </Text>
-                          </View>
-                          <Text style={styles.riskCertName}>{item.certificate_name}</Text>
-                          <Text style={styles.riskDate}>Bitiş Tarihi: <Text style={{ fontWeight: 'bold' }}>{item.expiry_date || '-'}</Text></Text>
-                        </View>
-                      );
-                    })
-                  )}
+              <Text style={styles.sectionTitle}>Şirket Genel Sağlık Karnesi</Text>
+              <View style={styles.statsGrid}>
+                <View style={[styles.statCard, { borderLeftColor: '#3b82f6' }]}>
+                  <Text style={styles.statValue}>{kpiStats.activeEmployees} / {kpiStats.passiveEmployees}</Text>
+                  <Text style={styles.statLabel}>Aktif / Pasif Personel</Text>
                 </View>
-              )}
-            </View>
 
-            <View style={styles.chartCard}>
-              <Text style={styles.chartTitle}>Departman Kadro Dağılımı</Text>
-              <BarChart
-                data={deptChartData}
-                width={screenWidth - 20}
-                height={210}
-                yAxisLabel=""
-                yAxisSuffix=""
-                segments={maxDeptCount > 4 ? 4 : maxDeptCount}
-                verticalLabelRotation={0}
-                fromZero={true}
-                chartConfig={{
-                  backgroundColor: '#ffffff',
-                  backgroundGradientFrom: '#ffffff',
-                  backgroundGradientTo: '#ffffff',
-                  decimalPlaces: 0,
-                  color: (opacity = 1) => `rgba(178, 42, 42, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(15, 23, 42, ${opacity})`,
-                  barPercentage: 0.55,
-                }}
-                style={styles.chartStyle}
-              />
-            </View>
+                <View style={[styles.statCard, { borderLeftColor: '#10b981' }]}>
+                  <Text style={styles.statValue}>{kpiStats.monthlyExamsCount}</Text>
+                  <Text style={styles.statLabel}>Bu Ayki Muayene</Text>
+                </View>
 
-            <View style={styles.chartCard}>
-              <Text style={styles.chartTitle}>Aylık Revir Muayene Trendi</Text>
-              <LineChart
-                data={examTrendData}
-                width={screenWidth - 20}
-                height={190}
-                fromZero={true}
-                chartConfig={{
-                  backgroundColor: '#ffffff',
-                  backgroundGradientFrom: '#ffffff',
-                  backgroundGradientTo: '#ffffff',
-                  decimalPlaces: 0,
-                  color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(15, 23, 42, ${opacity})`,
-                }}
-                bezier
-                style={styles.chartStyle}
-              />
-            </View>
+                <View style={[styles.statCard, { borderLeftColor: '#ef4444' }]}>
+                  <Text style={[styles.statValue, { color: '#dc2626' }]}>{kpiStats.riskCertificatesCount}</Text>
+                  <Text style={styles.statLabel}>Riskli Sertifikalar</Text>
+                </View>
 
-            <View style={styles.chartCard}>
-              <Text style={styles.chartTitle}>Departman Bazlı Maaş Bütçesi</Text>
-              {salaryChartData.length > 0 ? (
+                <View style={[styles.statCard, { borderLeftColor: '#8b5cf6' }]}>
+                  <Text style={[styles.statValue, { fontSize: 13 }]}>
+                    ₺{Number(kpiStats.totalSalaryBudget).toLocaleString('tr-TR')}
+                  </Text>
+                  <Text style={styles.statLabel}>Aylık Maaş Yükü</Text>
+                </View>
+              </View>
+
+              <View style={styles.chartCard}>
+                <TouchableOpacity
+                  style={styles.cardHeaderTouchable}
+                  activeOpacity={0.7}
+                  onPress={() => setShowRiskCertList(!showRiskCertList)}
+                >
+                  <Text style={styles.chartTitle}>Sertifika Risk & Uyum Durumu {showRiskCertList ? '-' : '+'}</Text>
+                  <Text style={styles.badgeText}>{kpiStats.riskCertificatesCount} Riskli</Text>
+                </TouchableOpacity>
+
                 <PieChart
-                  data={salaryChartData}
+                  data={certRiskData}
                   width={screenWidth - 20}
-                  height={170}
+                  height={160}
                   chartConfig={{ color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})` }}
                   accessor={"population"}
                   backgroundColor={"transparent"}
@@ -298,61 +236,183 @@ export default function AdminPanelScreen({ navigation }) {
                   center={[0, 0]}
                   hasLegend={true}
                 />
-              ) : (
-                <Text style={styles.emptyText}>Maaş verisi bulunamadı.</Text>
-              )}
-            </View>
 
-            <View style={styles.chartCard}>
-              <Text style={styles.chartTitle}>Rol & Yetki Dağılımı</Text>
-              <View style={styles.roleListContainer}>
-                {roleDistribution.map((item, idx) => {
-                  const percent = totalPersonnel > 0 ? Math.round((item.count / totalPersonnel) * 100) : 0;
-                  return (
-                    <View key={idx} style={styles.roleRow}>
-                      <View style={styles.roleHeader}>
-                        <Text style={styles.roleName}>{item.role_name}</Text>
-                        <Text style={styles.roleCount}>{item.count} Hesap (%{percent})</Text>
-                      </View>
-                      <View style={styles.progressBg}>
-                        <View style={[styles.progressFill, { width: `${percent}%` }]} />
-                      </View>
+                {showRiskCertList && (
+                  <View style={styles.accordionContainer}>
+                    <Text style={styles.accordionTitle}>Aksiyon Gerektiren Sertifikalar</Text>
+
+                    <View style={styles.tabContainer}>
+                      <TouchableOpacity
+                        style={[styles.tabButton, selectedCertTab === 'ALL' && styles.activeTabButton]}
+                        onPress={() => setSelectedCertTab('ALL')}
+                      >
+                        <Text style={[styles.tabText, selectedCertTab === 'ALL' && styles.activeTabText]}>Tümü ({riskCertList.length})</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.tabButton, selectedCertTab === 'SAGLIK' && styles.activeTabButton]}
+                        onPress={() => setSelectedCertTab('SAGLIK')}
+                      >
+                        <Text style={[styles.tabText, selectedCertTab === 'SAGLIK' && styles.activeTabText]}>Sağlık</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.tabButton, selectedCertTab === 'KALITE' && styles.activeTabButton]}
+                        onPress={() => setSelectedCertTab('KALITE')}
+                      >
+                        <Text style={[styles.tabText, selectedCertTab === 'KALITE' && styles.activeTabText]}>Kalite/Teknik</Text>
+                      </TouchableOpacity>
                     </View>
-                  );
-                })}
+
+                    {filteredRiskCertList.length === 0 ? (
+                      <Text style={styles.emptyText}>Bu kategoride riskli sertifika bulunmuyor.</Text>
+                    ) : (
+                      filteredRiskCertList.map((item, idx) => {
+                        const today = new Date();
+                        const expDate = item.expiry_date ? new Date(item.expiry_date) : null;
+                        const isExpired = expDate && expDate < today;
+                        const isHealth = (item.category_name || item.certificate_name || '').toLowerCase().includes('sağlık') || (item.certificate_name || '').toLowerCase().includes('rapor');
+
+                        return (
+                          <View key={idx} style={[styles.riskItemCard, { borderLeftColor: isExpired ? '#e53e3e' : '#f59f00' }]}>
+                            <View style={styles.riskHeader}>
+                              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <Text style={styles.riskEmpName}>{item.employee_name}</Text>
+                                <Text style={[styles.catBadge, { backgroundColor: isHealth ? '#e6fcf5' : '#eef2ff', color: isHealth ? '#0ca678' : '#4c6ef5' }]}>
+                                  {isHealth ? 'Sağlık' : 'Kalite'}
+                                </Text>
+                              </View>
+                              <Text style={[styles.riskBadge, { backgroundColor: isExpired ? '#fff5f5' : '#fff9db', color: isExpired ? '#e53e3e' : '#f59f00' }]}>
+                                {isExpired ? 'Süresi Dolmuş' : 'Bitişi Yakın'}
+                              </Text>
+                            </View>
+                            <Text style={styles.riskCertName}>{item.certificate_name}</Text>
+                            <Text style={styles.riskDate}>Bitiş Tarihi: <Text style={{ fontWeight: 'bold' }}>{item.expiry_date || '-'}</Text></Text>
+                          </View>
+                        );
+                      })
+                    )}
+                  </View>
+                )}
               </View>
+
+              <View style={styles.chartCard}>
+                <Text style={styles.chartTitle}>Departman Kadro Dağılımı</Text>
+                <BarChart
+                  data={deptChartData}
+                  width={screenWidth - 20}
+                  height={210}
+                  yAxisLabel=""
+                  yAxisSuffix=""
+                  segments={maxDeptCount > 4 ? 4 : maxDeptCount}
+                  verticalLabelRotation={0}
+                  fromZero={true}
+                  chartConfig={{
+                    backgroundColor: '#ffffff',
+                    backgroundGradientFrom: '#ffffff',
+                    backgroundGradientTo: '#ffffff',
+                    decimalPlaces: 0,
+                    color: (opacity = 1) => `rgba(178, 42, 42, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(15, 23, 42, ${opacity})`,
+                    barPercentage: 0.55,
+                  }}
+                  style={styles.chartStyle}
+                />
+              </View>
+
+              <View style={styles.chartCard}>
+                <Text style={styles.chartTitle}>Aylık Revir Muayene Trendi</Text>
+                <LineChart
+                  data={examTrendData}
+                  width={screenWidth - 20}
+                  height={190}
+                  fromZero={true}
+                  chartConfig={{
+                    backgroundColor: '#ffffff',
+                    backgroundGradientFrom: '#ffffff',
+                    backgroundGradientTo: '#ffffff',
+                    decimalPlaces: 0,
+                    color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(15, 23, 42, ${opacity})`,
+                  }}
+                  bezier
+                  style={styles.chartStyle}
+                />
+              </View>
+
+              <View style={styles.chartCard}>
+                <Text style={styles.chartTitle}>Departman Bazlı Maaş Bütçesi</Text>
+                {salaryChartData.length > 0 ? (
+                  <PieChart
+                    data={salaryChartData}
+                    width={screenWidth - 20}
+                    height={170}
+                    chartConfig={{ color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})` }}
+                    accessor={"population"}
+                    backgroundColor={"transparent"}
+                    paddingLeft={"10"}
+                    center={[0, 0]}
+                    hasLegend={true}
+                  />
+                ) : (
+                  <Text style={styles.emptyText}>Maaş verisi bulunamadı.</Text>
+                )}
+              </View>
+
+              <View style={styles.chartCard}>
+                <Text style={styles.chartTitle}>Rol & Yetki Dağılımı</Text>
+                <View style={styles.roleListContainer}>
+                  {roleDistribution.map((item, idx) => {
+                    const rawRole = (item.role_name || '').toLowerCase();
+                    const displayName = ROLE_NAMES[rawRole] || item.role_name;
+                    const percent = totalPersonnel > 0 ? Math.round((item.count / totalPersonnel) * 100) : 0;
+
+                    return (
+                      <View key={idx} style={styles.roleRow}>
+                        <View style={styles.roleHeader}>
+                          <Text style={styles.roleName}>{displayName}</Text>
+                          <Text style={styles.roleCount}>{item.count} Hesap (%{percent})</Text>
+                        </View>
+                        <View style={styles.progressBg}>
+                          <View style={[styles.progressFill, { width: `${percent}%` }]} />
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+
+              <View style={styles.quickNavContainer}>
+                <Text style={styles.quickNavTitle}>Hızlı Geçişler</Text>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.navButton}
+                  onPress={() => navigation.navigate('HRPanel')}
+                >
+                  <Text style={styles.navButtonText}>İnsan Kaynakları Paneline Git</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.navButton}
+                  onPress={() => navigation.navigate('QCPanel')}
+                >
+                  <Text style={styles.navButtonText}>Kalite Kontrol Paneline Git</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.navButton}
+                  onPress={() => navigation.navigate('InfirmaryPanel')}
+                >
+                  <Text style={styles.navButtonText}>Revir Paneline Git</Text>
+                </TouchableOpacity>
+              </View>
+
             </View>
-
-            <View style={styles.quickNavContainer}>
-              <Text style={styles.quickNavTitle}>Hızlı Geçişler</Text>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.navButton}
-                onPress={() => navigation.navigate('HRPanel')}
-              >
-                <Text style={styles.navButtonText}>İnsan Kaynakları Paneline Git</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.navButton}
-                onPress={() => navigation.navigate('QCPanel')}
-              >
-                <Text style={styles.navButtonText}>Kalite Kontrol Paneline Git</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.navButton}
-                onPress={() => navigation.navigate('InfirmaryPanel')}
-              >
-                <Text style={styles.navButtonText}>Revir Paneline Git</Text>
-              </TouchableOpacity>
-            </View>
-
-          </View>
-        )}
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -361,7 +421,7 @@ export default function AdminPanelScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#b22a2a'
+    backgroundColor: '#f8fafc'
   },
   container: {
     flex: 1,
@@ -382,8 +442,7 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   },
   contentPadding: {
-    paddingHorizontal: 16,
-    paddingTop: 15
+    padding: 16,
   },
   sectionTitle: {
     fontSize: 16,
@@ -475,6 +534,28 @@ const styles = StyleSheet.create({
     color: '#334155',
     marginBottom: 4
   },
+  tabContainer: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 8,
+  },
+  tabButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: '#f1f5f9',
+  },
+  activeTabButton: {
+    backgroundColor: '#b22a2a',
+  },
+  tabText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  activeTabText: {
+    color: '#ffffff',
+  },
   riskItemCard: {
     backgroundColor: '#f8fafc',
     padding: 10,
@@ -493,6 +574,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     color: '#1e293b'
+  },
+  catBadge: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 4,
   },
   riskBadge: {
     fontSize: 10,
