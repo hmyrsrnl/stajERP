@@ -55,7 +55,7 @@ function EmployeeUpdateForm({ initialData, departments, onSubmit }) {
       <FormField label="E-posta" value={formData.email} onChange={e => handleChange('email', e.target.value)} />
       <FormField label="Adres" value={formData.home_address} onChange={e => handleChange('home_address', e.target.value)} />
       <FormField label="Şirket İçi Ünvan" value={formData.role_name} onChange={e => handleChange('role_name', e.target.value)} />
-      <FormField label="Maaş" type="number" value={formData.maas} onChange={e => handleChange('maas', e.target.value)} />
+      <FormField label="Maaş" value={formData.maas} onChange={e => handleChange('maas', e.target.value)} />
 
       <div style={{ marginBottom: '15px', textAlign: 'left' }}>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px', fontSize: '14px' }}>Departman</label>

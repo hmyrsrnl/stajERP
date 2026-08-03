@@ -16,11 +16,21 @@ function AdminPanel() {
         axios.get('http://localhost/stajERP/backend/admin_stats.php')
             .then(res => {
                 if (res.data) {
+                    const data = res.data;
+
+                    const totalEmp = (data.activeEmployees || 0) + (data.passiveEmployees || 0);
+
+                    const totalDept = data.departmentDistribution ? data.departmentDistribution.length : 0;
+
+                    const riskCert = data.riskCertificatesCount || 0;
+
+                    const activeCert = data.certRiskStatus ? (data.certRiskStatus.active || 0) : 0;
+
                     setStats({
-                        totalEmployees: res.data.totalEmployees,
-                        totalDepartments: res.data.totalDepartments,
-                        pendingRequests: res.data.pendingRequests,
-                        activeCertificates: res.data.activeCertificates
+                        totalEmployees: totalEmp,
+                        totalDepartments: totalDept,
+                        pendingRequests: riskCert, 
+                        activeCertificates: activeCert
                     });
                 }
             })
@@ -32,13 +42,13 @@ function AdminPanel() {
     return (
         <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '1100px', margin: '20px auto' }}>
             <Header
-                title="Sistem Yönetim Merkezi "
+                title="Sistem Yönetim Merkezi"
                 backgroundColor="#b22a2a"
                 backPath="/dashboard-selection"
                 backButtonText="Kontrol Merkezine Dön"
             />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginTop: '30px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginTop: '30px', marginBottom: '30px' }}>
                 <div style={cardStyle('#9ebae8')}>
                     <h3>{stats.totalEmployees}</h3>
                     <p>Toplam Personel</p>
@@ -49,52 +59,37 @@ function AdminPanel() {
                 </div>
                 <div style={cardStyle('#efd2a0')}>
                     <h3>{stats.pendingRequests}</h3>
-                    <p>Bekleyen Talep</p>
+                    <p>Riskli Sertifika / Uyarı</p>
                 </div>
                 <div style={cardStyle('#bba5f0')}>
                     <h3>{stats.activeCertificates}</h3>
-                    <p>Tanımlı Sertifika</p>
+                    <p>Aktif Sertifika</p>
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px', marginTop: '40px', textAlign: 'left' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: '0 0 5px 0' }}>Hızlı Geçişler</h3>
 
-                <div style={{ background: '#f8fafc', padding: '25px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <h3 style={{ borderBottom: '2px solid #0f172a', paddingBottom: '10px', color: '#0f172a', margin: '0 0 15px 0' }}>
-                        Sistem Durumu ve Log Özetleri
-                    </h3>
-                    <div style={{ fontFamily: 'monospace', fontSize: '14px', color: '#334155', lineHeight: '2' }}>
-                        <p>[OK] MySQL Veritabanı bağlantısı başarılı. (StajERP)</p>
-                        <p>[OK] CORS Güvenlik katmanı aktif: http://localhost:5173</p>
-                        <p>[INFO] Rol tabanlı erişim kontrolü (RBAC) devrede.</p>
-                        <p>[INFO] Şifreleme algoritması aktif: Bcrypt (password_hash)</p>
-                    </div>
-                </div>
+                <button onClick={() => navigate('/hr-panel')} style={btnStyle('#b22a2a')}>
+                    İnsan Kaynakları Paneline Git
+                </button>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <h3 style={{ color: '#0f172a', margin: '0 0 5px 0' }}>Hızlı Geçişler</h3>
+                <button onClick={() => navigate('/qc-panel')} style={btnStyle('#b22a2a')}>
+                    Kalite Kontrol Paneline Git
+                </button>
 
-                    <button onClick={() => navigate('/hr-panel')} style={btnStyle('#b22a2a')}>
-                        İnsan Kaynakları Paneline Git
-                    </button>
-
-                    <button onClick={() => navigate('/qc-panel')} style={btnStyle('#b22a2a')}>
-                        Kalite Kontrol Paneline Git
-                    </button>
-
-                    <button onClick={() => navigate('/employee-dashboard')} style={btnStyle('#b22a2a')}>
-                        Kendi Çalışan Profilime Git
-                    </button>
-                </div>
-
+                <button onClick={() => navigate('/employee-dashboard')} style={btnStyle('#b22a2a')}>
+                    Kendi Çalışan Profilime Git
+                </button>
             </div>
+
         </div>
     );
 }
 
 const cardStyle = (bgColor) => ({
     background: bgColor,
-    color: 'white',
+    color: '#0f172a', 
     padding: '20px',
     borderRadius: '8px',
     textAlign: 'center',
