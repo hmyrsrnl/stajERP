@@ -13,3 +13,10 @@ config.php
 # Node / Expo
 node_modules/
 .expo/
+
+
+desktop/.vs/
+desktop/bin/
+desktop/obj/
+desktop/packages/
+desktop/*.csproj.user
