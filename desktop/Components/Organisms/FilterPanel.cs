@@ -47,7 +47,7 @@ namespace desktop.Components.Organisms
 
             lblHeader.Paint += (s, e) =>
             {
-                using (Pen pen = new Pen(Color.FromArgb(247, 163, 60), 2))
+                using (Pen pen = new Pen(Color.FromArgb(77, 182, 172), 2))
                 {
                     e.Graphics.DrawLine(pen, 0, lblHeader.Height - 2, lblHeader.Width, lblHeader.Height - 2);
                 }

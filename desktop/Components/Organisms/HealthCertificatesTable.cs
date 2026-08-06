@@ -149,7 +149,7 @@ namespace desktop.Components.Organisms
             {
                 CustomButton btnNotify = new CustomButton
                 {
-                    Text = "🔔",
+                    Text = "!",
                     Width = 32,
                     Height = 30,
                     Location = new Point(currentX, 11),

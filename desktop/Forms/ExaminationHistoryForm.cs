@@ -14,6 +14,7 @@ namespace desktop.Forms
         private string employeeName = "";
 
         private Header header = null!;
+        private Panel tableContainer = null!;
         private ExaminationTable examTable = null!;
 
         public ExaminationHistoryForm(int id)
@@ -21,6 +22,10 @@ namespace desktop.Forms
             this.employeeId = id;
             InitializeComponent();
             BuildUI();
+
+            this.Resize += (s, e) => CenterControls();
+            this.Load += (s, e) => CenterControls();
+
             _ = LoadDataAsync();
         }
 
@@ -48,10 +53,9 @@ namespace desktop.Forms
                 this.Close();
             };
 
-            Panel tableContainer = new Panel
+            tableContainer = new Panel
             {
                 Size = new Size(790, 440),
-                Location = new Point(30, 90),
                 BackColor = Color.White,
                 Padding = new Padding(15)
             };
@@ -91,6 +95,22 @@ namespace desktop.Forms
             tableContainer.Controls.Add(examTable);
             this.Controls.Add(tableContainer);
             this.Controls.Add(header);
+
+            CenterControls();
+        }
+
+        private void CenterControls()
+        {
+            if (tableContainer != null && header != null)
+            {
+                int headerHeight = header.Height;
+                int availableHeight = this.ClientSize.Height - headerHeight;
+
+                int x = (this.ClientSize.Width - tableContainer.Width) / 2;
+                int y = headerHeight + ((availableHeight - tableContainer.Height) / 2);
+
+                tableContainer.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
         }
 
         private async Task LoadDataAsync()

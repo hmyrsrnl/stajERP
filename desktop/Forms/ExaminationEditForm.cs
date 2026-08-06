@@ -22,6 +22,10 @@ namespace desktop.Forms
             this.examinationId = examId;
             InitializeComponent();
             BuildUI();
+
+            this.Resize += (s, e) => CenterControls();
+            this.Load += (s, e) => CenterControls();
+
             _ = FetchExaminationDetailAsync();
         }
 
@@ -54,13 +58,11 @@ namespace desktop.Forms
                 Text = "Muayene bilgileri yükleniyor...",
                 Font = new Font("Arial", 11f, FontStyle.Italic),
                 ForeColor = Color.FromArgb(102, 102, 102),
-                AutoSize = true,
-                Location = new Point(200, 200)
+                AutoSize = true
             };
 
             examForm = new ExaminationForm
             {
-                Location = new Point(75, 80),
                 Visible = false
             };
 
@@ -79,6 +81,30 @@ namespace desktop.Forms
             this.Controls.Add(lblLoading);
             this.Controls.Add(examForm);
             this.Controls.Add(header);
+
+            CenterControls();
+        }
+
+        private void CenterControls()
+        {
+            if (header == null) return;
+
+            int headerHeight = header.Height;
+            int availableHeight = this.ClientSize.Height - headerHeight;
+
+            if (examForm != null)
+            {
+                int x = (this.ClientSize.Width - examForm.Width) / 2;
+                int y = headerHeight + ((availableHeight - examForm.Height) / 2);
+                examForm.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
+
+            if (lblLoading != null)
+            {
+                int x = (this.ClientSize.Width - lblLoading.Width) / 2;
+                int y = headerHeight + ((availableHeight - lblLoading.Height) / 2);
+                lblLoading.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
         }
 
         private async Task FetchExaminationDetailAsync()
@@ -96,11 +122,13 @@ namespace desktop.Forms
                 }
 
                 examForm.Visible = true;
+                CenterControls();
             }
             else
             {
                 lblLoading.Text = "Muayene detayı getirilemedi.";
                 lblLoading.Visible = true;
+                CenterControls();
             }
         }
     }

@@ -21,12 +21,16 @@ namespace desktop.Forms
             this.certificateId = certId;
             InitializeComponent();
             BuildUI();
+
+            this.Resize += (s, e) => CenterControls();
+            this.Load += (s, e) => CenterControls();
+
             _ = LoadDataAsync();
         }
 
         private void InitializeComponent()
         {
-            this.ClientSize = new Size(1000,800);
+            this.ClientSize = new Size(1000, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -53,13 +57,11 @@ namespace desktop.Forms
                 Text = "Sertifika bilgileri yükleniyor...",
                 Font = new Font("Arial", 11f, FontStyle.Italic),
                 ForeColor = Color.FromArgb(102, 102, 102),
-                AutoSize = true,
-                Location = new Point(200, 200)
+                AutoSize = true
             };
 
             healthForm = new HealthForm
             {
-                Location = new Point(75, 80),
                 Visible = false
             };
 
@@ -86,6 +88,30 @@ namespace desktop.Forms
             this.Controls.Add(lblLoading);
             this.Controls.Add(healthForm);
             this.Controls.Add(header);
+
+            CenterControls();
+        }
+
+        private void CenterControls()
+        {
+            if (header == null) return;
+
+            int headerHeight = header.Height;
+            int availableHeight = this.ClientSize.Height - headerHeight;
+
+            if (healthForm != null)
+            {
+                int x = (this.ClientSize.Width - healthForm.Width) / 2;
+                int y = headerHeight + ((availableHeight - healthForm.Height) / 2);
+                healthForm.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
+
+            if (lblLoading != null)
+            {
+                int x = (this.ClientSize.Width - lblLoading.Width) / 2;
+                int y = headerHeight + ((availableHeight - lblLoading.Height) / 2);
+                lblLoading.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
         }
 
         private async Task LoadDataAsync()
@@ -101,6 +127,13 @@ namespace desktop.Forms
             {
                 employeeId = certData.employee_id;
                 healthForm.Visible = true;
+                CenterControls();
+            }
+            else
+            {
+                lblLoading.Text = "Sertifika bilgisi yüklenemedi.";
+                lblLoading.Visible = true;
+                CenterControls();
             }
         }
     }

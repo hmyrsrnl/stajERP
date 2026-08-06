@@ -19,6 +19,10 @@ namespace desktop.Forms
             this.employeeId = id;
             InitializeComponent();
             BuildUI();
+
+            this.Resize += (s, e) => CenterControls();
+            this.Load += (s, e) => CenterControls();
+
             _ = LoadTypesAsync();
         }
 
@@ -46,10 +50,7 @@ namespace desktop.Forms
                 this.Close();
             };
 
-            healthForm = new HealthForm
-            {
-                Location = new Point(75, 80)
-            };
+            healthForm = new HealthForm();
 
             healthForm.OnFormSubmit += async (s, formData) =>
             {
@@ -83,6 +84,22 @@ namespace desktop.Forms
 
             this.Controls.Add(healthForm);
             this.Controls.Add(header);
+
+            CenterControls();
+        }
+
+        private void CenterControls()
+        {
+            if (healthForm != null && header != null)
+            {
+                int headerHeight = header.Height;
+                int availableHeight = this.ClientSize.Height - headerHeight;
+
+                int x = (this.ClientSize.Width - healthForm.Width) / 2;
+                int y = headerHeight + ((availableHeight - healthForm.Height) / 2);
+
+                healthForm.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
         }
 
         private async Task LoadTypesAsync()

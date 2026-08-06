@@ -18,6 +18,7 @@ namespace desktop.Forms
         private List<UserData> filteredEmployees = new List<UserData>();
 
         private Header header = null!;
+        private Panel mainContainer = null!;
         private FilterPanel filterPanel = null!;
         private EmployeeTable employeeTable = null!;
         private Panel rightContainer = null!;
@@ -33,12 +34,16 @@ namespace desktop.Forms
             InitializeComponent();
             BuildInfirmaryUI();
             InitSearchTimer();
+
+            this.Resize += (s, e) => CenterMainContainer();
+            this.Load += (s, e) => CenterMainContainer();
+
             _ = FetchEmployeesDataAsync();
         }
 
         private void InitializeComponent()
         {
-            this.ClientSize = new Size(1000, 800);
+            this.ClientSize = new Size(1100, 680);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -46,21 +51,21 @@ namespace desktop.Forms
             this.BackColor = Color.FromArgb(248, 250, 252);
         }
 
-        
-
         private void BuildInfirmaryUI()
         {
             header = new Header("Revir Yönetim Paneli", "#4db6ac")
             {
                 ShowBackButton = false
             };
+
             CustomButton btnLogout = new CustomButton
             {
                 Text = "Çıkış",
                 Width = 80,
                 Height = 34,
                 BackColor = Color.FromArgb(4, 141, 125),
-                ForeColor = Color.White
+                ForeColor = Color.White,
+                Font = new Font("Arial", 8.5f, FontStyle.Bold)
             };
             btnLogout.Click += (s, e) =>
             {
@@ -68,12 +73,18 @@ namespace desktop.Forms
                 loginPage.Show();
                 this.Close();
             };
-
             header.AddActionButton(btnLogout);
+
+            mainContainer = new Panel
+            {
+                Size = new Size(1040, 560),
+                BackColor = Color.Transparent
+            };
 
             filterPanel = new FilterPanel
             {
-                Location = new Point(20, 80)
+                Location = new Point(0, 0),
+                Size = new Size(230, 560)
             };
 
             filterPanel.ConfigureVisibility(showGenders: true, showDepartments: true, showExport: true);
@@ -85,33 +96,19 @@ namespace desktop.Forms
                 searchTimer.Start();
             };
 
-            filterPanel.OnGenderChanged += (s, list) =>
-            {
-                selectedGenders = list;
-                ApplyLocalFilters();
-            };
-
-            filterPanel.OnDepartmentChanged += (s, list) =>
-            {
-                selectedDepartments = list;
-                ApplyLocalFilters();
-            };
-
-            filterPanel.OnStatusChanged += (s, list) =>
-            {
-                selectedStatus = list;
-                ApplyLocalFilters();
-            };
-
+            filterPanel.OnGenderChanged += (s, list) => { selectedGenders = list; ApplyLocalFilters(); };
+            filterPanel.OnDepartmentChanged += (s, list) => { selectedDepartments = list; ApplyLocalFilters(); };
+            filterPanel.OnStatusChanged += (s, list) => { selectedStatus = list; ApplyLocalFilters(); };
             filterPanel.OnExportClicked += (s, e) => ExportToCsvExcel();
 
             rightContainer = new Panel
             {
-                Location = new Point(280, 80),
-                Size = new Size(780, 560),
+                Location = new Point(250, 0),
+                Size = new Size(790, 560),
                 BackColor = Color.FromArgb(248, 249, 250),
-                Padding = new Padding(15)
+                Padding = new Padding(10)
             };
+
             rightContainer.Paint += (s, e) =>
             {
                 ControlPaint.DrawBorder(e.Graphics, rightContainer.ClientRectangle,
@@ -121,7 +118,11 @@ namespace desktop.Forms
                     Color.FromArgb(222, 226, 230), 1, ButtonBorderStyle.Solid);
             };
 
-            employeeTable = new EmployeeTable();
+            employeeTable = new EmployeeTable
+            {
+                Dock = DockStyle.Fill
+            };
+
             employeeTable.OnSelectEmployee += (s, emp) =>
             {
                 InfirmaryEmployeeDetailForm detailForm = new InfirmaryEmployeeDetailForm(emp.id);
@@ -131,10 +132,28 @@ namespace desktop.Forms
 
             rightContainer.Controls.Add(employeeTable);
 
-            this.Controls.Add(rightContainer);
-            this.Controls.Add(filterPanel);
+            mainContainer.Controls.Add(filterPanel);
+            mainContainer.Controls.Add(rightContainer);
+
+            this.Controls.Add(mainContainer);
             this.Controls.Add(header);
+
+            CenterMainContainer();
         }
+
+        private void CenterMainContainer()
+        {
+            if (mainContainer != null && header != null)
+            {
+                int availableHeight = this.ClientSize.Height - header.Height;
+
+                int x = (this.ClientSize.Width - mainContainer.Width) / 2;
+                int y = header.Height + ((availableHeight - mainContainer.Height) / 2);
+
+                mainContainer.Location = new Point(Math.Max(10, x), Math.Max(header.Height + 10, y));
+            }
+        }
+
 
         private void InitSearchTimer()
         {
@@ -155,7 +174,7 @@ namespace desktop.Forms
 
             var departmentsList = rawEmployees
                 .Select(e => e.department_name ?? e.role_name ?? e.role)
-                .Where(d => !string.IsNullOrEmpty(d))
+                .Where(d => !string.IsNullOrEmpty(d) && !d.Equals("Admin", StringComparison.OrdinalIgnoreCase))
                 .OfType<string>()
                 .Distinct()
                 .ToList();
@@ -167,6 +186,7 @@ namespace desktop.Forms
 
             ApplyLocalFilters();
         }
+
         private void ApplyLocalFilters()
         {
             filteredEmployees = rawEmployees.Where(emp =>

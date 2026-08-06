@@ -19,6 +19,9 @@ namespace desktop.Forms
             this.employeeId = id;
             InitializeComponent();
             BuildUI();
+
+            this.Resize += (s, e) => CenterControls();
+            this.Load += (s, e) => CenterControls();
         }
 
         private void InitializeComponent()
@@ -45,10 +48,7 @@ namespace desktop.Forms
                 this.Close();
             };
 
-            examForm = new ExaminationForm
-            {
-                Location = new Point(75, 80)
-            };
+            examForm = new ExaminationForm();
 
             examForm.OnFormSubmit += async (s, formData) =>
             {
@@ -72,6 +72,22 @@ namespace desktop.Forms
 
             this.Controls.Add(examForm);
             this.Controls.Add(header);
+
+            CenterControls();
+        }
+
+        private void CenterControls()
+        {
+            if (examForm != null && header != null)
+            {
+                int headerHeight = header.Height;
+                int availableHeight = this.ClientSize.Height - headerHeight;
+
+                int x = (this.ClientSize.Width - examForm.Width) / 2;
+                int y = headerHeight + ((availableHeight - examForm.Height) / 2);
+
+                examForm.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
         }
     }
 }

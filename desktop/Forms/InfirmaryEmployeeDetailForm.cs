@@ -23,6 +23,10 @@ namespace desktop.Forms
             this.employeeId = id;
             InitializeComponent();
             BuildDetailUI();
+
+            this.Resize += (s, e) => CenterControls();
+            this.Load += (s, e) => CenterControls();
+
             _ = FetchEmployeeDetailAsync();
         }
 
@@ -55,14 +59,12 @@ namespace desktop.Forms
                 Text = "Sağlık kayıtları yükleniyor...",
                 Font = new Font("Arial", 11f, FontStyle.Italic),
                 ForeColor = Color.FromArgb(102, 102, 102),
-                AutoSize = true,
-                Location = new Point(300, 200)
+                AutoSize = true
             };
 
             cardContainer = new Panel
             {
                 Size = new Size(560, 430),
-                Location = new Point(120, 110),
                 BackColor = Color.White,
                 Padding = new Padding(30),
                 Visible = false
@@ -88,11 +90,11 @@ namespace desktop.Forms
             };
 
             infirmaryActions.OnAddExaminationClick += (s, e) =>
-{
-    ExaminationAddForm addForm = new ExaminationAddForm(employeeId);
-    addForm.Show();
-    this.Hide();
-};
+            {
+                ExaminationAddForm addForm = new ExaminationAddForm(employeeId);
+                addForm.Show();
+                this.Hide();
+            };
 
             infirmaryActions.OnHistoryClick += (s, e) =>
             {
@@ -114,6 +116,28 @@ namespace desktop.Forms
             this.Controls.Add(lblLoading);
             this.Controls.Add(cardContainer);
             this.Controls.Add(header);
+
+            CenterControls();
+        }
+
+        private void CenterControls()
+        {
+            int headerHeight = header != null ? header.Height : 70;
+            int availableHeight = this.ClientSize.Height - headerHeight;
+
+            if (cardContainer != null)
+            {
+                int x = (this.ClientSize.Width - cardContainer.Width) / 2;
+                int y = headerHeight + ((availableHeight - cardContainer.Height) / 2);
+                cardContainer.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
+
+            if (lblLoading != null)
+            {
+                int x = (this.ClientSize.Width - lblLoading.Width) / 2;
+                int y = headerHeight + ((availableHeight - lblLoading.Height) / 2);
+                lblLoading.Location = new Point(Math.Max(0, x), Math.Max(headerHeight + 10, y));
+            }
         }
 
         private async Task FetchEmployeeDetailAsync()
@@ -127,11 +151,13 @@ namespace desktop.Forms
             {
                 healthDetailCard.SetEmployeeData(currentEmployee);
                 cardContainer.Visible = true;
+                CenterControls(); 
             }
             else
             {
                 lblLoading.Text = "Çalışan detay verileri alınamadı.";
                 lblLoading.Visible = true;
+                CenterControls();
             }
         }
     }
